@@ -61,10 +61,11 @@ int main()
     
     /// Creating the window object
 
-    /// Window "hints" are used to tell GLFW important things before creation of a window in this case the version
+    /// Window "hints" are used to tell GLFW important things before creation of a window in this case the version and OpenGL Profile
     
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     
     GLFWwindow* window = glfwCreateWindow(640, 480, "Proton Engine v0.0.1", NULL, NULL);
     if (!window)
