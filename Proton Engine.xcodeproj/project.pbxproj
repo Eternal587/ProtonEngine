@@ -264,6 +264,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LOCAL_LIBRARY_DIR)/Frameworks",
+				);
 				HEADER_SEARCH_PATHS = "\"/Users/vibingcatt/Documents/GitHub/Proton Engine/Proton Engine/Dependicies\"";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -273,6 +277,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LOCAL_LIBRARY_DIR)/Frameworks",
+				);
 				HEADER_SEARCH_PATHS = "\"/Users/vibingcatt/Documents/GitHub/Proton Engine/Proton Engine/Dependicies\"";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
