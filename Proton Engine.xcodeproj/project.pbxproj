@@ -268,6 +268,7 @@
 					"$(inherited)",
 					"$(LOCAL_LIBRARY_DIR)/Frameworks",
 				);
+				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = "\"/Users/vibingcatt/Documents/GitHub/Proton Engine/Proton Engine/Dependicies\"";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -281,6 +282,7 @@
 					"$(inherited)",
 					"$(LOCAL_LIBRARY_DIR)/Frameworks",
 				);
+				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = "\"/Users/vibingcatt/Documents/GitHub/Proton Engine/Proton Engine/Dependicies\"";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
