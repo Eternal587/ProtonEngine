@@ -8,7 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		3925D1DC2E92A47500786FE4 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3925D1DB2E92A47500786FE4 /* OpenGL.framework */; };
-		3925D1DE2E92A47900786FE4 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3925D1DD2E92A47900786FE4 /* GLUT.framework */; };
+		3925D21F2E9301FD00786FE4 /* libglfw.3.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3925D21E2E9301FD00786FE4 /* libglfw.3.4.dylib */; };
+		3925D22B2E9303E600786FE4 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3925D22A2E9303E600786FE4 /* Cocoa.framework */; };
+		3925D22D2E9303FA00786FE4 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3925D22C2E9303FA00786FE4 /* CoreVideo.framework */; };
+		3925D22F2E93040000786FE4 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3925D22E2E93040000786FE4 /* IOKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -27,6 +30,10 @@
 		3925D1D02E92A40F00786FE4 /* Proton Engine */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Proton Engine"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3925D1DB2E92A47500786FE4 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		3925D1DD2E92A47900786FE4 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
+		3925D21E2E9301FD00786FE4 /* libglfw.3.4.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libglfw.3.4.dylib; path = ../../../../../opt/homebrew/Cellar/glfw/3.4/lib/libglfw.3.4.dylib; sourceTree = "<group>"; };
+		3925D22A2E9303E600786FE4 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		3925D22C2E9303FA00786FE4 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
+		3925D22E2E93040000786FE4 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -42,7 +49,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3925D1DE2E92A47900786FE4 /* GLUT.framework in Frameworks */,
+				3925D22F2E93040000786FE4 /* IOKit.framework in Frameworks */,
+				3925D22D2E9303FA00786FE4 /* CoreVideo.framework in Frameworks */,
+				3925D22B2E9303E600786FE4 /* Cocoa.framework in Frameworks */,
+				3925D21F2E9301FD00786FE4 /* libglfw.3.4.dylib in Frameworks */,
 				3925D1DC2E92A47500786FE4 /* OpenGL.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -70,6 +80,10 @@
 		3925D1DA2E92A47500786FE4 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				3925D22E2E93040000786FE4 /* IOKit.framework */,
+				3925D22C2E9303FA00786FE4 /* CoreVideo.framework */,
+				3925D22A2E9303E600786FE4 /* Cocoa.framework */,
+				3925D21E2E9301FD00786FE4 /* libglfw.3.4.dylib */,
 				3925D1DD2E92A47900786FE4 /* GLUT.framework */,
 				3925D1DB2E92A47500786FE4 /* OpenGL.framework */,
 			);
@@ -269,7 +283,14 @@
 					"$(LOCAL_LIBRARY_DIR)/Frameworks",
 				);
 				GCC_VERSION = "";
-				HEADER_SEARCH_PATHS = "\"/Users/vibingcatt/Documents/GitHub/Proton Engine/Proton Engine/Dependicies\"";
+				HEADER_SEARCH_PATHS = (
+					"/opt/homebrew/Cellar/glfw/3.4/include/**",
+					"$(PROJECT_DIR)/libs/glad/include/**",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/opt/homebrew/Cellar/glfw/3.4/lib,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -283,7 +304,14 @@
 					"$(LOCAL_LIBRARY_DIR)/Frameworks",
 				);
 				GCC_VERSION = "";
-				HEADER_SEARCH_PATHS = "\"/Users/vibingcatt/Documents/GitHub/Proton Engine/Proton Engine/Dependicies\"";
+				HEADER_SEARCH_PATHS = (
+					"/opt/homebrew/Cellar/glfw/3.4/include/**",
+					"$(PROJECT_DIR)/libs/glad/include/**",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/opt/homebrew/Cellar/glfw/3.4/lib,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
