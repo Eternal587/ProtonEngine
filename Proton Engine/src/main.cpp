@@ -60,7 +60,7 @@ int main()
     glfwSetErrorCallback(error_callback);
     
     /// Creating the window object
-
+    
     /// Window "hints" are used to tell GLFW important things before creation of a window in this case the version and OpenGL Profile
     
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -88,12 +88,33 @@ int main()
     glfwGetFramebufferSize(window, &width, &height);
     glViewport(0, 0, width, height);
     
+    float positions[6] = {-0.5f, -0.5f, 0.0f, 0.5f, 0.5f, -0.5f};
+    
+    /// VBO: Video Buffer Object, The VBO is GPU Memory used for storing your vertex data, instead of sending vertex data from your cpu to your gpu every frame you upload it once through the VBO and the GPU can then access the data every time you draw
+    /// VAO: Vertex Attribute Object. used for refrencing your Vertex Atributes, telling your GPU how to read your data in the VBO, telling it what index your data is at
+    /// EBO
+    
+    unsigned int VBO, VAO;
+    
+    /// Generating buffer (num_of_buffers, buffer var)
+    glGenBuffers(1, &VBO);
+    
+    /// Bind the Buffer (Type of data being stored, buffer)
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    
+    /// Put data in the buffer (type of data, size in bytes, data, how your using the data)
+    glBufferData(GL_ARRAY_BUFFER, 6*sizeof(float), positions, GL_STATIC_DRAW);
+    
     /// Main Game Loop
     
     while (!glfwWindowShouldClose(window))
     {
         /// Timer, used for animations, ect
+        glClear(GL_COLOR_BUFFER_BIT);
+        
         double time = glfwGetTime();
+        
+        
         
         /// Swapping the "front and back" video buffers GLFW Uses
         
