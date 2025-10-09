@@ -11,23 +11,68 @@
 
 /// Shaders, used for rendering using OpenGL's Graphics Pipeline
 
-// Vertex Shader source code
+static unsigned int compile_shader(const std::string& source, unsigned int type) {
+    /// Defining the Vertex shader glCreateShader(shadertype)
+    unsigned int id = glCreateShader(type);
+    const char* src = source.c_str();
+    
+    /// glShaderSource(shader, count of source codes, pointer to source, length)
+    glShaderSource(id, 1, &src, nullptr);
+    glCompileShader(id);
+    
+    /// Error Handeling
+    int result;
+    glGetShaderiv(id, GL_COMPILE_STATUS, &result);
+    if (result == GL_FALSE) {
+        
+        int length;
+        glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
+        
+        char* message = (char*)alloca(length * sizeof(char));
+        glGetShaderInfoLog(id, length, &length, message);
+        std::cout << "Failed to compile " << (type == GL_VERTEX_SHADER ? "vertex":"fragment") << " shader:\n" << message << std::endl;
+        glDeleteShader(id);
+        return 0;
+    }
+    
+    return id;
+}
+
+static unsigned int create_shaders(const std::string& vertex_shader, const std::string& fragment_shader) {
+    /// Creating the program for the shader
+    unsigned int program = glCreateProgram();
+    
+    /// Compiling the Shaders
+    unsigned int vs = compile_shader(vertex_shader, GL_VERTEX_SHADER);
+    unsigned int fs = compile_shader(fragment_shader, GL_FRAGMENT_SHADER);
+    
+    /// At taching the shaders to the program
+    glAttachShader(program, vs);
+    glAttachShader(program, fs);
+    
+    /// Linking the program to Proton Engine and validating it
+    glLinkProgram(program);
+    glValidateProgram(program);
+    
+    glDeleteShader(vs);
+    glDeleteShader(fs);
+    
+    return program;
+}
+
 const char* vertexShaderSource = R"(
 #version 330 core
-layout (location = 0) in vec3 aPos;
-
+layout (location = 0) in vec2 aPos;
 void main() {
-    gl_Position = vec4(aPos, 1.0);
+    gl_Position = vec4(aPos, 0.0, 1.0);
 }
 )";
 
-// Fragment Shader source code
 const char* fragmentShaderSource = R"(
 #version 330 core
 out vec4 FragColor;
-
 void main() {
-    FragColor = vec4(0.2, 0.7, 0.3, 1.0); // greenish
+    FragColor = vec4(0.2, 0.7, 0.3, 1.0);
 }
 )";
 
@@ -78,6 +123,7 @@ int main()
     
     /// Telling glad to Load OpenGL
     gladLoadGL();
+    glfwSwapInterval(1);
     
     /// Telling GLFW what to call back to when interperting inputs
     glfwSetKeyCallback(window, key_callback);
@@ -98,12 +144,34 @@ int main()
     
     /// Generating buffer (num_of_buffers, buffer var)
     glGenBuffers(1, &VBO);
+    glGenVertexArrays(1, &VAO);
     
-    /// Bind the Buffer (Type of data being stored, buffer)
+    /// Bind the Buffer (Type of data being stored, buffer
+    glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     
     /// Put data in the buffer (type of data, size in bytes, data, how your using the data)
     glBufferData(GL_ARRAY_BUFFER, 6*sizeof(float), positions, GL_STATIC_DRAW);
+    
+    /// Vertex Attrib Pointer (just telling OpenGL how to deal with vertex data) glVertexAttribPointer(index of attribute, number of components per vertex attribute, data type (float, int, ect), normalized(setting the attribute to a "normal" value (between 0-1), amount of bytes between each vertex, offset of each attribute in bytes)
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2*sizeof(float), (void*)0);
+    
+    /// Enabling a Vertex Attribute
+    glEnableVertexAttribArray(0);
+    
+    /// Shaders: Pipeline
+    ///
+    /// Draw Call
+    /// ->
+    /// Vertex Shader:
+    /// Called for each vertex, telling where the vertex to be on the screen (also used to pass data to the next shader)
+    /// ->
+    /// Fragment/Pixel Shader:
+    /// Run for each Pixel that needs to be drawn, Resterizing Each Pixel, Decides which color each pixel needs to be
+    /// ->
+    /// Drawn on Screen
+    
+    unsigned int shader = create_shaders(vertexShaderSource, fragmentShaderSource);
     
     /// Main Game Loop
     
@@ -111,14 +179,15 @@ int main()
     {
         /// Timer, used for animations, ect
         glClear(GL_COLOR_BUFFER_BIT);
+        glUseProgram(shader);
+        glBindVertexArray(VAO);
         
         double time = glfwGetTime();
         
-        
+        glDrawArrays(GL_TRIANGLES, 0, 3);
         
         /// Swapping the "front and back" video buffers GLFW Uses
         
-        glfwSwapInterval(1);
         glfwSwapBuffers(window);
         
         /// Handles Window Inputs connecting GLFW with the window system
