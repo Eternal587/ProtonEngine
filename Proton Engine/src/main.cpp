@@ -8,6 +8,66 @@
 #include <iostream>
 #include "glad.h"
 #include <GLFW/glfw3.h>
+#include <fstream>
+#include <string>
+#include <sstream>
+#include <mach-o/dyld.h>
+
+std::string getExecutablePath() {
+    char pathBuffer[1024];
+    uint32_t size = sizeof(pathBuffer);
+    if (_NSGetExecutablePath(pathBuffer, &size) != 0) {
+        // Buffer too small; allocate dynamically if you want
+        std::cerr << "Path buffer too small\n";
+        return "";
+    }
+    return std::string(pathBuffer);
+}
+
+
+/// Parsing the shader from a file
+
+struct shader_program_source {
+    std::string vertex_source;
+    std::string fragment_source;
+};
+
+static shader_program_source parse_shader(const std::string& filepath) {
+    /// Specifies the File your accessing
+    std::ifstream stream(filepath);
+    
+    std::string line;
+    
+    if (!stream.is_open()) {
+            std::cerr << "parse_shader: Failed to open file: " << filepath << std::endl;
+            return {"", ""};
+    }
+    
+    enum class shader_type {
+        NONE = -1,
+        VERTEX = 0,
+        FRAGMENT = 1
+    };
+    
+    /// creating a buffer for the shader code to be in
+    std::stringstream ss[2];
+    shader_type type = shader_type::NONE;
+    
+    /// while getline returns an actual line check if the code can find #shader then check if that line has vertex or fragment and change depending on it
+    while(getline(stream, line)) {
+        if(line.find("#shader") != std::string::npos) {
+            if(line.find("vertex") != std::string::npos) {
+                type = shader_type::VERTEX;
+            } else if(line.find("fragment") != std::string::npos)  {
+                type = shader_type::FRAGMENT;
+            }
+        } else {
+            ss[(int)type] << line << '\n';
+        }
+    }
+    
+    return {ss[0].str(), ss[1].str()};
+}
 
 /// Shaders, used for rendering using OpenGL's Graphics Pipeline
 
@@ -60,21 +120,23 @@ static unsigned int create_shaders(const std::string& vertex_shader, const std::
     return program;
 }
 
-const char* vertexShaderSource = R"(
+const char* fallback_vertex = R"(
 #version 330 core
 layout (location = 0) in vec2 aPos;
 void main() {
-    gl_Position = vec4(aPos, 0.0, 1.0);
+    gl_Position = vec4(aPos, 1.0, 1.0);
 }
 )";
 
-const char* fragmentShaderSource = R"(
+const char* fallback_fragment = R"(
 #version 330 core
 out vec4 FragColor;
 void main() {
     FragColor = vec4(0.2, 0.7, 0.3, 1.0);
 }
 )";
+
+
 
 /// Error Callback for GLFW ->  Used to report error with GLFW
 
@@ -171,7 +233,16 @@ int main()
     /// ->
     /// Drawn on Screen
     
-    unsigned int shader = create_shaders(vertexShaderSource, fragmentShaderSource);
+    std::string filepath = getExecutablePath();
+    
+    bool debug = true;
+    
+    if (debug == true) {
+        filepath = "/Users/vibingcatt/Documents/GitHub/ProtonEngine/Proton Engine/src";
+    }
+    
+    shader_program_source source = parse_shader(filepath + "/resources/shaders/basic.glsl");
+    unsigned int shader = create_shaders(source.vertex_source, source.fragment_source);
     
     /// Main Game Loop
     
