@@ -12,6 +12,7 @@ As well I would like to impliment custom shaders for people using Proton Engine 
 I will be making custom class's and structs for Proton Engine using Header files and such, so I will be providing docs whenever I start getting more serious into it being an engine
 
 STAGES
+```
 1: Setup OpenGL
 2. Setup Shaders
 3. Clean Code, make structs and classes for objects to clean up my code
@@ -20,6 +21,7 @@ STAGES
 6. Add Map Loader and Editor
 7. Add Graphical Settings Options (Low, Medium, Quality, Ultra) 
 8. Allow for Custom Shaders to be used
+```
 
 NOTE:
 This is my current path, things may change as I am littearly only on step 1, as well I might rewrite Proton Engine If needed, this is my first c++ Project after all, But I do want it to be good
