@@ -11,6 +11,9 @@ As well I would like to impliment custom shaders for people using Proton Engine 
 
 I will be making custom class's and structs for Proton Engine using Header files and such, so I will be providing docs whenever I start getting more serious into it being an engine
 
+Prototype Image:
+[Prototype](https://eternal587.github.io/ProtonEngine/images/499580624-c79472bb-5240-41c9-8c63-7e5de097408d.png)
+
 STAGES
 ```
 1: Setup OpenGL
