@@ -1,4 +1,5 @@
-# 3d Engine for C++
+# Proton Engine
+## 3d Engine for C++
 Proton Engine is a personal project to make a 3d engine from scratch using C++ and OpenGL, and make a crossplatform 3d Engine
 
 NOTE:
