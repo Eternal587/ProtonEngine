@@ -12,6 +12,60 @@
 #include <string>
 #include <sstream>
 #include <mach-o/dyld.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <cmath>
+
+class Cube {
+public:
+    glm::vec3 pos;
+    glm::vec3 dimensions;
+    glm::vec3 color;
+
+    std::vector<float> return_vertices() {
+        float px = pos.x;
+        float py = pos.y;
+        float pz = pos.z;
+        float dx = dimensions.x;
+        float dy = dimensions.y;
+        float dz = dimensions.z;
+
+        return {
+            px, py, pz, color.x, color.y, color.z,
+            px + dx, py, pz, color.x, color.y, color.z,
+            px + dx, py + dy, pz, color.x, color.y, color.z,
+            px, py + dy, pz, color.x, color.y, color.z,
+            px, py, pz + dz, color.x, color.y, color.z,
+            px + dx, py, pz + dz, color.x, color.y, color.z,
+            px + dx, py + dy, pz + dz, color.x, color.y, color.z,
+            px, py + dy, pz + dz, color.x, color.y, color.z
+        };
+    }
+    
+    std::vector<unsigned int> return_indices() {
+        return {
+            // back face
+            0, 1, 2,
+            2, 3, 0,
+            // front face
+            4, 5, 6,
+            6, 7, 4,
+            // left face
+            0, 4, 7,
+            7, 3, 0,
+            // right face
+            1, 5, 6,
+            6, 2, 1,
+            // bottom face
+            0, 1, 5,
+            5, 4, 0,
+            // top face
+            3, 2, 6,
+            6, 7, 3
+        };
+    }
+};
 
 std::string getExecutablePath() {
     char pathBuffer[1024];
@@ -196,15 +250,14 @@ int main()
     glfwGetFramebufferSize(window, &width, &height);
     glViewport(0, 0, width, height);
     
-    float positions[12] = {-0.5f, -0.5f, /// 0
-                            0.5f, -0.5f, /// 1
-                            0.5f, 0.5f, /// 2
-                            -0.5f, 0.5f}; /// 3
+    Cube cube1;
+    cube1.pos = glm::vec3(-0.5f, -0.5f,-0.5f);
+    cube1.dimensions = glm::vec3(1.0f, 1.0f, 1.0f);
+    cube1.color = glm::vec3(0.0f, 0.25f, 1.0f);
     
-    unsigned int indices[] = {
-        0, 1, 2,
-        2, 3, 0
-    };
+    std::vector<float> vertices = cube1.return_vertices();
+    std::vector<unsigned int> indices = cube1.return_indices();
+
     
     /// VBO: Video Buffer Object, The VBO is GPU Memory used for storing your vertex data, instead of sending vertex data from your cpu to your gpu every frame you upload it once through the VBO and the GPU can then access the data every time you draw
     /// VAO: Vertex Attribute Object. used for refrencing your Vertex Atributes, telling your GPU how to read your data in the VBO, telling it what index your data is at
@@ -222,19 +275,20 @@ int main()
     
     
     /// Put data in the buffer (type of data, size in bytes, data, how your using the data)
-    glBufferData(GL_ARRAY_BUFFER, 8*sizeof(float), positions, GL_STATIC_DRAW);
-    
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_DYNAMIC_DRAW);
+
     /// Vertex Attrib Pointer (just telling OpenGL how to deal with vertex data) glVertexAttribPointer(index of attribute, number of components per vertex attribute, data type (float, int, ect), normalized(setting the attribute to a "normal" value (between 0-1), amount of bytes between each vertex, offset of each attribute in bytes)
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2*sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)0);
     
     /// Enabling a Vertex Attribute
     glEnableVertexAttribArray(0);
     
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+    
     glGenBuffers(1, &IBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6*sizeof(unsigned int), indices, GL_STATIC_DRAW);
-    
-    
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_DYNAMIC_DRAW);
     
     /// Shaders: Pipeline
     ///
@@ -259,26 +313,125 @@ int main()
     shader_program_source source = parse_shader(filepath + "/resources/shaders/basic.glsl");
     unsigned int shader = create_shaders(source.vertex_source, source.fragment_source);
     
+    glUseProgram(shader);
+    
+    struct Camera {
+        glm::vec3 position;
+        float yaw;   // rotation around Y axis (like your cangle)
+        float pitch; // rotation around X axis (for looking up/down)
+    };
+    
+    Camera player;
+    
+    player.position = glm::vec3(0.0f, 0.0f, 3.0f);
+    player.yaw = 0.0f;
+    player.pitch = 0.0f;
+    
+    glm::vec3 front;
+    front.x = cos(glm::radians(player.yaw)) * cos(glm::radians(player.pitch));
+    front.y = sin(glm::radians(player.pitch));
+    front.z = sin(glm::radians(player.yaw)) * cos(glm::radians(player.pitch));
+    glm::vec3 camera_front = glm::normalize(front);
+
+    // Create transformation matrices
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+    model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+
+    glm::mat4 view = glm::lookAt(
+        player.position,  // Camera position
+        player.position + camera_front,  // Target
+        glm::vec3(0.0f, 1.0f, 0.0f)   // Up vector
+    );
+
+    glm::mat4 projection = glm::perspective(
+        glm::radians(45.0f),
+        800.0f / 600.0f,
+        0.1f,
+        100.0f
+    );
+
+    // Send all 3 matrices to shader
+    int modelLoc = glGetUniformLocation(shader, "model");
+    int viewLoc  = glGetUniformLocation(shader, "view");
+    int projLoc  = glGetUniformLocation(shader, "projection");
+
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+    glUniformMatrix4fv(viewLoc,  1, GL_FALSE, glm::value_ptr(view));
+    glUniformMatrix4fv(projLoc,  1, GL_FALSE, glm::value_ptr(projection));
+
+    float speed = 0.02f;
+
     /// Main Game Loop
+    float cmodr = 0.0f;
+    float cmodg = 0.0f;
+    float cmodb = 0.0f;
     
     while (!glfwWindowShouldClose(window))
     {
-        /// Timer, used for animations, ect
-        glClear(GL_COLOR_BUFFER_BIT);
-        glUseProgram(shader);
-        glBindVertexArray(VAO);
-        
-        double time = glfwGetTime();
-        
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
-        
-        /// Swapping the "front and back" video buffers GLFW Uses
-        
-        glfwSwapBuffers(window);
-        
-        /// Handles Window Inputs connecting GLFW with the window system
-        
+        // input + timing
         glfwPollEvents();
+
+        // Update camera front vector from yaw & pitch (recompute each frame)
+        glm::vec3 front;
+        front.x = cos(glm::radians(player.yaw)) * cos(glm::radians(player.pitch));
+        front.y = sin(glm::radians(player.pitch));
+        front.z = sin(glm::radians(player.yaw)) * cos(glm::radians(player.pitch));
+        glm::vec3 camera_front = glm::normalize(front);
+        
+
+        /// Checking if a key is pressed -> moving the camera because of it
+        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) player.position += speed * camera_front;
+        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) player.position -= speed * camera_front;
+        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) player.position.y += speed;
+        if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) player.position.y -= speed;
+        glm::vec3 camera_right = glm::normalize(glm::cross(camera_front, glm::vec3(0.0f, 1.0f, 0.0f)));
+        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) player.position -= speed * camera_right;
+        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) player.position += speed * camera_right;
+        if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)  player.yaw -= 1.5f;
+        if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) player.yaw += 1.5f;
+        if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)  player.pitch += 0.75f;
+        if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) player.pitch -= 0.75f;
+
+        
+        float t = (float)glfwGetTime();
+        float wt = (fmod(t, 2) - 1.0f);
+        
+        if (wt < 0.0f) {wt = 0.0f - wt;}
+        
+        cube1.color = glm::vec3(wt, wt, wt);
+        vertices = cube1.return_vertices();
+        
+        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_DYNAMIC_DRAW);
+
+        // Prepare matrices (recompute each frame)
+        glm::mat4 model = glm::mat4(1.0f);
+        // example rotating model over time:
+        model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)); // slight tilt
+
+        glm::mat4 view = glm::lookAt(player.position, player.position + camera_front, glm::vec3(0.0f, 1.0f, 0.0f));
+
+        int fbw, fbh;
+        glfwGetFramebufferSize(window, &fbw, &fbh);
+        float aspect = (fbh > 0) ? (float)fbw / (float)fbh : 4.0f/3.0f;
+        glm::mat4 projection = glm::perspective(glm::radians(45.0f), aspect, 0.1f, 100.0f);
+
+        // render
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glUseProgram(shader);
+
+        // upload uniforms AFTER glUseProgram
+        int modelLoc = glGetUniformLocation(shader, "model");
+        int viewLoc  = glGetUniformLocation(shader, "view");
+        int projLoc  = glGetUniformLocation(shader, "projection");
+        if (modelLoc >= 0) glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        if (viewLoc  >= 0) glUniformMatrix4fv(viewLoc,  1, GL_FALSE, glm::value_ptr(view));
+        if (projLoc  >= 0) glUniformMatrix4fv(projLoc,  1, GL_FALSE, glm::value_ptr(projection));
+
+        glBindVertexArray(VAO);
+        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)0);
+
+        glfwSwapBuffers(window);
     }
 
     /// Destroying the GLFW Window

@@ -286,6 +286,7 @@
 				HEADER_SEARCH_PATHS = (
 					"/opt/homebrew/Cellar/glfw/3.4/include/**",
 					"$(PROJECT_DIR)/libs/glad/include/**",
+					"/opt/homebrew/Cellar/glm/1.0.1/include/**",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -307,6 +308,7 @@
 				HEADER_SEARCH_PATHS = (
 					"/opt/homebrew/Cellar/glfw/3.4/include/**",
 					"$(PROJECT_DIR)/libs/glad/include/**",
+					"/opt/homebrew/Cellar/glm/1.0.1/include/**",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
