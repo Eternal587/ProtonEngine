@@ -17,55 +17,46 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <cmath>
 
-class Cube {
-public:
-    glm::vec3 pos;
-    glm::vec3 dimensions;
-    glm::vec3 color;
+/// Proton Engine Specific Headers
+#include "shapes.h"
+#include "shapes_renderer.h"
 
-    std::vector<float> return_vertices() {
-        float px = pos.x;
-        float py = pos.y;
-        float pz = pos.z;
-        float dx = dimensions.x;
-        float dy = dimensions.y;
-        float dz = dimensions.z;
+float yaw = -90.0f; // start facing forward (−Z)
+float pitch = 0.0f;
 
-        return {
-            px, py, pz, color.x, color.y, color.z,
-            px + dx, py, pz, color.x, color.y, color.z,
-            px + dx, py + dy, pz, color.x, color.y, color.z,
-            px, py + dy, pz, color.x, color.y, color.z,
-            px, py, pz + dz, color.x, color.y, color.z,
-            px + dx, py, pz + dz, color.x, color.y, color.z,
-            px + dx, py + dy, pz + dz, color.x, color.y, color.z,
-            px, py + dy, pz + dz, color.x, color.y, color.z
-        };
+static float lastX = 320.0f; // center of window (half width)
+static float lastY = 240.0f; // center of window (half height)
+static bool firstMouse = true;
+
+void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+{
+    static float sensitivity = 0.2f;
+
+    if (firstMouse) {
+        lastX = xpos;
+        lastY = ypos;
+        firstMouse = false;
     }
-    
-    std::vector<unsigned int> return_indices() {
-        return {
-            // back face
-            0, 1, 2,
-            2, 3, 0,
-            // front face
-            4, 5, 6,
-            6, 7, 4,
-            // left face
-            0, 4, 7,
-            7, 3, 0,
-            // right face
-            1, 5, 6,
-            6, 2, 1,
-            // bottom face
-            0, 1, 5,
-            5, 4, 0,
-            // top face
-            3, 2, 6,
-            6, 7, 3
-        };
-    }
-};
+
+    float xoffset = xpos - lastX;
+    float yoffset = lastY - ypos;
+    lastX = xpos;
+    lastY = ypos;
+
+    xoffset *= sensitivity;
+    yoffset *= sensitivity;
+
+    yaw   += xoffset;
+    pitch += yoffset;
+
+    // clamp the pitch so we don't flip upside down
+    if (pitch > 89.0f)  pitch = 89.0f;
+    if (pitch < -89.0f) pitch = -89.0f;
+}
+
+
+
+
 
 std::string getExecutablePath() {
     char pathBuffer[1024];
@@ -249,46 +240,11 @@ int main()
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
     glViewport(0, 0, width, height);
-    
-    Cube cube1;
-    cube1.pos = glm::vec3(-0.5f, -0.5f,-0.5f);
-    cube1.dimensions = glm::vec3(1.0f, 1.0f, 1.0f);
-    cube1.color = glm::vec3(0.0f, 0.25f, 1.0f);
-    
-    std::vector<float> vertices = cube1.return_vertices();
-    std::vector<unsigned int> indices = cube1.return_indices();
 
     
     /// VBO: Video Buffer Object, The VBO is GPU Memory used for storing your vertex data, instead of sending vertex data from your cpu to your gpu every frame you upload it once through the VBO and the GPU can then access the data every time you draw
     /// VAO: Vertex Attribute Object. used for refrencing your Vertex Atributes, telling your GPU how to read your data in the VBO, telling it what index your data is at
     /// IBO: Index Buffer Object, used to tell OpenGL to go over a vertex again to save space by not having to repeat verticies
-    
-    unsigned int VBO, VAO, IBO;
-    
-    /// Generating buffer (num_of_buffers, buffer var)
-    glGenBuffers(1, &VBO);
-    glGenVertexArrays(1, &VAO);
-    
-    /// Bind the Buffer (Type of data being stored, buffer
-    glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    
-    
-    /// Put data in the buffer (type of data, size in bytes, data, how your using the data)
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_DYNAMIC_DRAW);
-
-    /// Vertex Attrib Pointer (just telling OpenGL how to deal with vertex data) glVertexAttribPointer(index of attribute, number of components per vertex attribute, data type (float, int, ect), normalized(setting the attribute to a "normal" value (between 0-1), amount of bytes between each vertex, offset of each attribute in bytes)
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)0);
-    
-    /// Enabling a Vertex Attribute
-    glEnableVertexAttribArray(0);
-    
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-    
-    glGenBuffers(1, &IBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_DYNAMIC_DRAW);
     
     /// Shaders: Pipeline
     ///
@@ -315,6 +271,18 @@ int main()
     
     glUseProgram(shader);
     
+    Cube cube1(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "/resources/textures/cat.jpg", glm::vec3(1.0f, 1.0f, 1.0f), 0.1f);
+    Cube cube2(glm::vec3(9.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "/resources/textures/cat.jpg", glm::vec3(1.0f, 1.0f, 1.0f), 0.2f);
+    
+    Cube crate(glm::vec3(4.75f, 0.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "/resources/textures/crate.png", glm::vec3(1.0f, 1.0f, 1.0f), 0.2f);
+    
+    Cube platform(glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(10.0f, 1.0f, 10.0f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "/resources/textures/prototype.png", glm::vec3(10.0f, 1.0f, 10.0f), 1.0f);
+    
+    Cube wall1(glm::vec3(0.0f, 0.0f, -0.5f), glm::vec3(10.0f, 1.5f, 0.5f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "/resources/textures/stone_bricks.png", glm::vec3(30.0f, 6.0f, 2.0f), 0.1f);
+    Cube wall2(glm::vec3(-0.5f, 0.0f, 0.0f), glm::vec3(0.5f, 1.5f, 10.0f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "/resources/textures/stone_bricks.png", glm::vec3(2.0f, 6.0f, 30.0f), 0.1f);
+    Cube wall3(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(10.0f, 1.5f, 0.5f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "/resources/textures/stone_bricks.png", glm::vec3(30.0f, 6.0f, 2.0f), 0.1f);
+    Cube wall4(glm::vec3(10.0f, 0.0f, 0.0f), glm::vec3(0.5f, 1.5f, 10.0f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "/resources/textures/stone_bricks.png", glm::vec3(2.0f, 6.0f, 30.0f), 0.1f);
+
     struct Camera {
         glm::vec3 position;
         float yaw;   // rotation around Y axis (like your cangle)
@@ -323,7 +291,7 @@ int main()
     
     Camera player;
     
-    player.position = glm::vec3(0.0f, 0.0f, 3.0f);
+    player.position = glm::vec3(5.0f, 1.0f, 5.0f);
     player.yaw = 0.0f;
     player.pitch = 0.0f;
     
@@ -335,8 +303,6 @@ int main()
 
     // Create transformation matrices
     glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
-    model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 
     glm::mat4 view = glm::lookAt(
         player.position,  // Camera position
@@ -346,9 +312,9 @@ int main()
 
     glm::mat4 projection = glm::perspective(
         glm::radians(45.0f),
-        800.0f / 600.0f,
-        0.1f,
-        100.0f
+        16.0f / 9.0f,
+        0.9f,
+        200.0f
     );
 
     // Send all 3 matrices to shader
@@ -361,23 +327,31 @@ int main()
     glUniformMatrix4fv(projLoc,  1, GL_FALSE, glm::value_ptr(projection));
 
     float speed = 0.02f;
+    
+    glEnable(GL_DEPTH_TEST);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    
+    glfwSetCursorPosCallback(window, mouse_callback);
+    
+    GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
+    const GLFWvidmode* mode = glfwGetVideoMode(primaryMonitor);
 
-    /// Main Game Loop
-    float cmodr = 0.0f;
-    float cmodg = 0.0f;
-    float cmodb = 0.0f;
+    glfwSetWindowMonitor(window, primaryMonitor, 0, 0, mode->width, mode->height, mode->refreshRate);
     
     while (!glfwWindowShouldClose(window))
     {
+        
         // input + timing
         glfwPollEvents();
 
         // Update camera front vector from yaw & pitch (recompute each frame)
         glm::vec3 front;
-        front.x = cos(glm::radians(player.yaw)) * cos(glm::radians(player.pitch));
-        front.y = sin(glm::radians(player.pitch));
-        front.z = sin(glm::radians(player.yaw)) * cos(glm::radians(player.pitch));
-        glm::vec3 camera_front = glm::normalize(front);
+        front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+        front.y = sin(glm::radians(pitch));
+        front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+        camera_front = glm::normalize(front);
+        
+        float t = glfwGetTime();
         
 
         /// Checking if a key is pressed -> moving the camera because of it
@@ -387,22 +361,7 @@ int main()
         if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) player.position.y -= speed;
         glm::vec3 camera_right = glm::normalize(glm::cross(camera_front, glm::vec3(0.0f, 1.0f, 0.0f)));
         if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) player.position -= speed * camera_right;
-        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) player.position += speed * camera_right;
-        if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)  player.yaw -= 1.5f;
-        if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) player.yaw += 1.5f;
-        if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)  player.pitch += 0.75f;
-        if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) player.pitch -= 0.75f;
-
-        
-        float t = (float)glfwGetTime();
-        float wt = (fmod(t, 2) - 1.0f);
-        
-        if (wt < 0.0f) {wt = 0.0f - wt;}
-        
-        cube1.color = glm::vec3(wt, wt, wt);
-        vertices = cube1.return_vertices();
-        
-        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_DYNAMIC_DRAW);
+        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) player.position += speed * camera_right;\
 
         // Prepare matrices (recompute each frame)
         glm::mat4 model = glm::mat4(1.0f);
@@ -419,18 +378,28 @@ int main()
         // render
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glUseProgram(shader);
+        Renderer::RenderAll(shader);
 
         // upload uniforms AFTER glUseProgram
         int modelLoc = glGetUniformLocation(shader, "model");
         int viewLoc  = glGetUniformLocation(shader, "view");
         int projLoc  = glGetUniformLocation(shader, "projection");
+        
+        int lightLoc = glGetUniformLocation(shader, "alight_sources");
+        int lightColLoc = glGetUniformLocation(shader, "alight_color");
+        int CamPosLoc = glGetUniformLocation(shader, "viewPos");
+        
+        glUniform3f(CamPosLoc, player.position.x, player.position.y, player.position.z);
+        
+        /// Spinning Rainbow Light
+        glUniform3f(lightLoc, 5.0f, 5.0f, 5.0f);
+        glUniform3f(lightColLoc, 1.0f, 1.0f, 1.0f);
+        
         if (modelLoc >= 0) glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
         if (viewLoc  >= 0) glUniformMatrix4fv(viewLoc,  1, GL_FALSE, glm::value_ptr(view));
         if (projLoc  >= 0) glUniformMatrix4fv(projLoc,  1, GL_FALSE, glm::value_ptr(projection));
-
-        glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)0);
-
+        
+        
         glfwSwapBuffers(window);
     }
 

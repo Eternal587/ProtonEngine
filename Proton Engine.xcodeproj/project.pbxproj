@@ -285,12 +285,18 @@
 				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = (
 					"/opt/homebrew/Cellar/glfw/3.4/include/**",
-					"$(PROJECT_DIR)/libs/glad/include/**",
+					"$(PROJECT_DIR)/libs/glad/include",
 					"/opt/homebrew/Cellar/glm/1.0.1/include/**",
+					"$(PROJECT_DIR)/src/",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/opt/homebrew/Cellar/glfw/3.4/lib,
+					"$(PROJECT_DIR)/Proton\\ Engine/imgui/examples/libs/glfw/lib-vc2010-32",
+					"$(PROJECT_DIR)/Proton\\ Engine/imgui/examples/libs/glfw/lib-vc2010-64",
+					"$(PROJECT_DIR)/Proton\\ Engine/src/imgui/examples/libs/glfw/lib-vc2010-32",
+					"$(PROJECT_DIR)/Proton\\ Engine/src/imgui/examples/libs/glfw/lib-vc2010-64",
+					"$(PROJECT_DIR)/src/imgui",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -307,12 +313,18 @@
 				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = (
 					"/opt/homebrew/Cellar/glfw/3.4/include/**",
-					"$(PROJECT_DIR)/libs/glad/include/**",
+					"$(PROJECT_DIR)/libs/glad/include",
 					"/opt/homebrew/Cellar/glm/1.0.1/include/**",
+					"$(PROJECT_DIR)/src/",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/opt/homebrew/Cellar/glfw/3.4/lib,
+					"$(PROJECT_DIR)/Proton\\ Engine/imgui/examples/libs/glfw/lib-vc2010-32",
+					"$(PROJECT_DIR)/Proton\\ Engine/imgui/examples/libs/glfw/lib-vc2010-64",
+					"$(PROJECT_DIR)/Proton\\ Engine/src/imgui/examples/libs/glfw/lib-vc2010-32",
+					"$(PROJECT_DIR)/Proton\\ Engine/src/imgui/examples/libs/glfw/lib-vc2010-64",
+					"$(PROJECT_DIR)/src/imgui",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
