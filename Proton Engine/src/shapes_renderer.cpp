@@ -21,6 +21,3 @@ void Renderer::RenderAll(unsigned int shaderProgram) {
         cube->Render(shaderProgram);
 }
 
-
-
-

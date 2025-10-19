@@ -151,4 +151,3 @@ void Cube::Render(unsigned int shaderProgram) {
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 }
-

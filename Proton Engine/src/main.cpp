@@ -11,7 +11,11 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+/// Macos Library for getting exe location
 #include <mach-o/dyld.h>
+
+/// Windows Specific Lib
+// #include <windows.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -57,6 +61,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 
 
 
+/// Mac Os Version
 
 std::string getExecutablePath() {
     char pathBuffer[1024];
@@ -69,6 +74,15 @@ std::string getExecutablePath() {
     return std::string(pathBuffer);
 }
 
+/// Windows Version Of GetExe
+/*
+std::string getExecutablePath() {
+    char buffer[MAX_PATH];
+    GetModuleFileNameA(NULL, buffer, MAX_PATH);
+    std::string path = std::string(buffer);
+    path.erase(path.end() - 28, path.end());
+    return path;
+} */
 
 /// Parsing the shader from a file
 
@@ -260,16 +274,33 @@ int main()
     
     std::string filepath = getExecutablePath();
     
-    bool debug = true;
+    std::cout << "Executable Being Run at: " << filepath << std::endl;
+    
+    bool debug = false;
     
     if (debug == true) {
         filepath = "/Users/vibingcatt/Documents/GitHub/ProtonEngine/Proton Engine/src";
     }
     
-    shader_program_source source = parse_shader(filepath + "/resources/shaders/basic.glsl");
+    // shader_program_source source = parse_shader(filepath + "resources\\shaders\\basic.glsl");
+    shader_program_source source = parse_shader(filepath + "/resources/shaders/basic.glsl"); // Mac Version
     unsigned int shader = create_shaders(source.vertex_source, source.fragment_source);
     
     glUseProgram(shader);
+    
+    /*
+    Cube cube1(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "resources\\textures\\cat.jpg", glm::vec3(1.0f, 1.0f, 1.0f), 0.1f);
+    Cube cube2(glm::vec3(9.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "resources\\textures\\cat.jpg", glm::vec3(1.0f, 1.0f, 1.0f), 0.2f);
+    
+    Cube crate(glm::vec3(4.75f, 0.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "resources\\textures\\crate.png", glm::vec3(1.0f, 1.0f, 1.0f), 0.2f);
+    
+    Cube platform(glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(10.0f, 1.0f, 10.0f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "resources\\textures\\prototype.png", glm::vec3(10.0f, 1.0f, 10.0f), 1.0f);
+    
+    Cube wall1(glm::vec3(0.0f, 0.0f, -0.5f), glm::vec3(10.0f, 1.5f, 0.5f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "resources\\textures\\stone_bricks.png", glm::vec3(30.0f, 6.0f, 2.0f), 0.1f);
+    Cube wall2(glm::vec3(-0.5f, 0.0f, 0.0f), glm::vec3(0.5f, 1.5f, 10.0f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "resources\\textures\\stone_bricks.png", glm::vec3(2.0f, 6.0f, 30.0f), 0.1f);
+    Cube wall3(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(10.0f, 1.5f, 0.5f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "resources\\textures\\stone_bricks.png", glm::vec3(30.0f, 6.0f, 2.0f), 0.1f);
+    Cube wall4(glm::vec3(10.0f, 0.0f, 0.0f), glm::vec3(0.5f, 1.5f, 10.0f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "resources\\textures\\stone_bricks.png", glm::vec3(2.0f, 6.0f, 30.0f), 0.1f);
+    */
     
     Cube cube1(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "/resources/textures/cat.jpg", glm::vec3(1.0f, 1.0f, 1.0f), 0.1f);
     Cube cube2(glm::vec3(9.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "/resources/textures/cat.jpg", glm::vec3(1.0f, 1.0f, 1.0f), 0.2f);
@@ -399,6 +430,9 @@ int main()
         if (viewLoc  >= 0) glUniformMatrix4fv(viewLoc,  1, GL_FALSE, glm::value_ptr(view));
         if (projLoc  >= 0) glUniformMatrix4fv(projLoc,  1, GL_FALSE, glm::value_ptr(projection));
         
+        int width, height;
+        glfwGetFramebufferSize(window, &width, &height);
+        glViewport(0, 0, width, height);
         
         glfwSwapBuffers(window);
     }
