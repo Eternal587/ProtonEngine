@@ -25,31 +25,43 @@
 #include "shapes.h"
 #include "shapes_renderer.h"
 
+/// Yaw - Side to Side Angle, Pitch - Up and Down Angle
 float yaw = -90.0f; // start facing forward (−Z)
 float pitch = 0.0f;
 
-static float lastX = 320.0f; // center of window (half width)
-static float lastY = 240.0f; // center of window (half height)
+/// Tracking the Last Mouse Pos
+static float lastX = 320.0f;
+static float lastY = 240.0f;
+
+/// Checking if its the first Mouse Movement
 static bool firstMouse = true;
 
+/// Mouse Callback for GLFW
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
-{
+{    
+    /// The Sensitivty of the Mouse - TODO: ADD ADJUSTABLE SETTING FOR SENSITIVITY
     static float sensitivity = 0.2f;
 
+    /// IF its the first mouse movement set the lastX and lastY to the current pos of the mouse and set firstMouse to false
     if (firstMouse) {
         lastX = xpos;
         lastY = ypos;
         firstMouse = false;
     }
 
+    /// Get the Offset of the last Mouse Pos and Current Pos
     float xoffset = xpos - lastX;
     float yoffset = lastY - ypos;
+
+    /// Set the Last MousePos to the current Mouse Pos
     lastX = xpos;
     lastY = ypos;
 
+    /// Multiply the Offset by the Mouse sensitivity
     xoffset *= sensitivity;
     yoffset *= sensitivity;
 
+    /// Add the offset to the yaw and pitch 
     yaw   += xoffset;
     pitch += yoffset;
 
@@ -61,31 +73,44 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 
 
 
-/// Mac Os Version
+/// Mac Os Version of getExecutablePath
 
 std::string getExecutablePath() {
+    /// Buffer for the path to sit in
     char pathBuffer[1024];
+
+    /// Get the size of the pathBuffer
     uint32_t size = sizeof(pathBuffer);
+
+    /// If the executable path is not big enough return and error
     if (_NSGetExecutablePath(pathBuffer, &size) != 0) {
         // Buffer too small; allocate dynamically if you want
         std::cerr << "Path buffer too small\n";
         return "";
     }
+
+    /// Return the Path
     return std::string(pathBuffer);
 }
 
-/// Windows Version Of GetExe
+/// Windows Version Of GetExecutable
 /*
 std::string getExecutablePath() {
+    /// Create a buffer for the path to sit in
     char buffer[MAX_PATH];
+    /// Push the Path into the buffer
     GetModuleFileNameA(NULL, buffer, MAX_PATH);
+    /// Set the path equal to the path in the buffer
     std::string path = std::string(buffer);
+    /// Erase the name of the executable EX: (28 in this case because that is the current size of the title)
     path.erase(path.end() - 28, path.end());
+    /// Return the Executable Path
     return path;
 } */
 
 /// Parsing the shader from a file
 
+/// Creating a struct to contain the source so you can have on function to return both sources
 struct shader_program_source {
     std::string vertex_source;
     std::string fragment_source;
@@ -94,26 +119,30 @@ struct shader_program_source {
 static shader_program_source parse_shader(const std::string& filepath) {
     /// Specifies the File your accessing
     std::ifstream stream(filepath);
-    
+
+    /// Creating a Variable for the current line to go into
     std::string line;
-    
+
+    /// If the stream isn't open the file can't be opened so return nothing and put a error into the console
     if (!stream.is_open()) {
             std::cerr << "parse_shader: Failed to open file: " << filepath << std::endl;
             return {"", ""};
     }
-    
+
+    /// Create a Class for the shader type to make easy transition to the array the data is being put into
     enum class shader_type {
         NONE = -1,
         VERTEX = 0,
         FRAGMENT = 1
     };
     
-    /// creating a buffer for the shader code to be in
+    /// creating a buffer for the shader code to be in and set the shader type to none
     std::stringstream ss[2];
     shader_type type = shader_type::NONE;
     
     /// while getline returns an actual line check if the code can find #shader then check if that line has vertex or fragment and change depending on it
     while(getline(stream, line)) {
+        /// If the line can find shader then set the current type to vertex or fragment depending on where it needs to start dumping to
         if(line.find("#shader") != std::string::npos) {
             if(line.find("vertex") != std::string::npos) {
                 type = shader_type::VERTEX;
@@ -121,10 +150,11 @@ static shader_program_source parse_shader(const std::string& filepath) {
                 type = shader_type::FRAGMENT;
             }
         } else {
+            /// If the line does not find shader then dump it to its respective shader
             ss[(int)type] << line << '\n';
         }
     }
-    
+    /// Return the shaders
     return {ss[0].str(), ss[1].str()};
 }
 
@@ -172,7 +202,8 @@ static unsigned int create_shaders(const std::string& vertex_shader, const std::
     /// Linking the program to Proton Engine and validating it
     glLinkProgram(program);
     glValidateProgram(program);
-    
+
+    /// Delete the shaders as they are no longer usefuln and return the shader program
     glDeleteShader(vs);
     glDeleteShader(fs);
     
@@ -232,7 +263,8 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    
+
+    /// Create the GLFW Window and if when asked to return the window object it returns nothing return an error into the console
     GLFWwindow* window = glfwCreateWindow(640, 480, "Proton Engine v0.0.1", NULL, NULL);
     if (!window)
     {
@@ -250,7 +282,8 @@ int main()
     glfwSetKeyCallback(window, key_callback);
     
     /// Paramters for OpenGL To display into the window with
-    
+
+    /// Tell OpenGL the Viewport to the window
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
     glViewport(0, 0, width, height);
@@ -271,23 +304,29 @@ int main()
     /// Run for each Pixel that needs to be drawn, Resterizing Each Pixel, Decides which color each pixel needs to be
     /// ->
     /// Drawn on Screen
-    
+
+    /// Get the file path to the executable
     std::string filepath = getExecutablePath();
     
     std::cout << "Executable Being Run at: " << filepath << std::endl;
     
     bool debug = false;
-    
+
+    /// If I'm Debugging in xcode it runs the executable in a very specific spot that does not contain the resources folder, meaning I wont be able to access my textures, models, and shaders
     if (debug == true) {
         filepath = "/Users/vibingcatt/Documents/GitHub/ProtonEngine/Proton Engine/src";
     }
     
-    // shader_program_source source = parse_shader(filepath + "resources\\shaders\\basic.glsl");
+    // shader_program_source source = parse_shader(filepath + "resources\\shaders\\basic.glsl"); // Windows Version
     shader_program_source source = parse_shader(filepath + "/resources/shaders/basic.glsl"); // Mac Version
     unsigned int shader = create_shaders(source.vertex_source, source.fragment_source);
-    
+
+    /// Tell Open GL to use the shader program
     glUseProgram(shader);
-    
+
+    /// Setting up all the cubes (manually as of current but will be adding maps to easily add objects)
+
+    /// Windows Textures Locations
     /*
     Cube cube1(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "resources\\textures\\cat.jpg", glm::vec3(1.0f, 1.0f, 1.0f), 0.1f);
     Cube cube2(glm::vec3(9.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "resources\\textures\\cat.jpg", glm::vec3(1.0f, 1.0f, 1.0f), 0.2f);
@@ -301,7 +340,8 @@ int main()
     Cube wall3(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(10.0f, 1.5f, 0.5f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "resources\\textures\\stone_bricks.png", glm::vec3(30.0f, 6.0f, 2.0f), 0.1f);
     Cube wall4(glm::vec3(10.0f, 0.0f, 0.0f), glm::vec3(0.5f, 1.5f, 10.0f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "resources\\textures\\stone_bricks.png", glm::vec3(2.0f, 6.0f, 30.0f), 0.1f);
     */
-    
+
+    /// MacOS Texture Locations
     Cube cube1(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "/resources/textures/cat.jpg", glm::vec3(1.0f, 1.0f, 1.0f), 0.1f);
     Cube cube2(glm::vec3(9.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "/resources/textures/cat.jpg", glm::vec3(1.0f, 1.0f, 1.0f), 0.2f);
     
@@ -314,18 +354,22 @@ int main()
     Cube wall3(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(10.0f, 1.5f, 0.5f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "/resources/textures/stone_bricks.png", glm::vec3(30.0f, 6.0f, 2.0f), 0.1f);
     Cube wall4(glm::vec3(10.0f, 0.0f, 0.0f), glm::vec3(0.5f, 1.5f, 10.0f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "/resources/textures/stone_bricks.png", glm::vec3(2.0f, 6.0f, 30.0f), 0.1f);
 
+    /// Struct for the camera object that contains the yaw (side to side), the pitch (up and down) and the position
     struct Camera {
         glm::vec3 position;
         float yaw;   // rotation around Y axis (like your cangle)
         float pitch; // rotation around X axis (for looking up/down)
     };
-    
+
+    /// Creating a camera for the player
     Camera player;
-    
+
+    /// Defining the postiion, yaw, and pitch of the player
     player.position = glm::vec3(5.0f, 1.0f, 5.0f);
     player.yaw = 0.0f;
     player.pitch = 0.0f;
-    
+
+    /// Calculation where the player is facing, finding their normal vector
     glm::vec3 front;
     front.x = cos(glm::radians(player.yaw)) * cos(glm::radians(player.pitch));
     front.y = sin(glm::radians(player.pitch));
@@ -335,17 +379,19 @@ int main()
     // Create transformation matrices
     glm::mat4 model = glm::mat4(1.0f);
 
+    /// Creating the transformation matrix thats used to change by where the camera is looking
     glm::mat4 view = glm::lookAt(
         player.position,  // Camera position
         player.position + camera_front,  // Target
         glm::vec3(0.0f, 1.0f, 0.0f)   // Up vector
     );
 
+    /// Creating the transformation matrix for multiplying by the aspect ratio, fov, and zoom
     glm::mat4 projection = glm::perspective(
         glm::radians(45.0f),
-        16.0f / 9.0f,
-        0.9f,
-        200.0f
+        16.0f / 9.0f, /// Aspect Ratio
+        0.9f, /// Zoom
+        200.0f /// FOV
     );
 
     // Send all 3 matrices to shader
@@ -357,52 +403,63 @@ int main()
     glUniformMatrix4fv(viewLoc,  1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(projLoc,  1, GL_FALSE, glm::value_ptr(projection));
 
+    /// Defining the speed of the player on the x, y, and z axis's
     float speed = 0.02f;
-    
+
+    /// Enabling the check for depth so that OpenGL Dosen't Render Object that are behind other Objects
     glEnable(GL_DEPTH_TEST);
+
+    /// Setting an Input mode up for the cursor and disabling the cursor
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    
+
+    /// Setting up the callback for the cursor pos
     glfwSetCursorPosCallback(window, mouse_callback);
-    
+
+    /// Setting up full screen by getting the monitor and mode then telling it to use the current resolution of the screen and refresh rate
     GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
     const GLFWvidmode* mode = glfwGetVideoMode(primaryMonitor);
 
     glfwSetWindowMonitor(window, primaryMonitor, 0, 0, mode->width, mode->height, mode->refreshRate);
-    
+
+    /// Main Game Loop
     while (!glfwWindowShouldClose(window))
     {
         
-        // input + timing
+        // Checking for the Quit Button,resize button, ect
         glfwPollEvents();
 
-        // Update camera front vector from yaw & pitch (recompute each frame)
+        // Update camera front vector from yaw & pitch 
         glm::vec3 front;
         front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
         front.y = sin(glm::radians(pitch));
         front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
         camera_front = glm::normalize(front);
-        
+
+        /// Get the Current Time
+        float pt = t;
         float t = glfwGetTime();
+
+        float deltatime = t - pt;
         
 
         /// Checking if a key is pressed -> moving the camera because of it
-        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) player.position += speed * camera_front;
-        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) player.position -= speed * camera_front;
-        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) player.position.y += speed;
-        if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) player.position.y -= speed;
-        glm::vec3 camera_right = glm::normalize(glm::cross(camera_front, glm::vec3(0.0f, 1.0f, 0.0f)));
-        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) player.position -= speed * camera_right;
-        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) player.position += speed * camera_right;\
+        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) player.position += speed * camera_front; /// Moving the camera forward based on the Forward Vector
+        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) player.position -= speed * camera_front; /// Moving the camera backwards based on he forward vector
+        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) player.position.y += speed; /// Modifiying the y to go up
+        if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) player.position.y -= speed; /// Modifing the y to go down
+        glm::vec3 camera_right = glm::normalize(glm::cross(camera_front, glm::vec3(0.0f, 1.0f, 0.0f))); /// Getting the vector of the right of the playe ror "camera_right"
+        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) player.position -= speed * camera_right; /// Going to the left based on the right vector 
+        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) player.position += speed * camera_right; /// Going to the right based on the right vectir
 
-        // Prepare matrices (recompute each frame)
+        /// Preparing the Matirces
         glm::mat4 model = glm::mat4(1.0f);
-        // example rotating model over time:
-        model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)); // slight tilt
-
+        model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
         glm::mat4 view = glm::lookAt(player.position, player.position + camera_front, glm::vec3(0.0f, 1.0f, 0.0f));
 
+        /// Getting the frame buffer for the width and height
         int fbw, fbh;
         glfwGetFramebufferSize(window, &fbw, &fbh);
+        /// Getting the aspect ratio based on the width and height
         float aspect = (fbh > 0) ? (float)fbw / (float)fbh : 4.0f/3.0f;
         glm::mat4 projection = glm::perspective(glm::radians(45.0f), aspect, 0.1f, 100.0f);
 
@@ -422,18 +479,20 @@ int main()
         
         glUniform3f(CamPosLoc, player.position.x, player.position.y, player.position.z);
         
-        /// Spinning Rainbow Light
+        /// Uploading the Light Postion and Color
         glUniform3f(lightLoc, 5.0f, 5.0f, 5.0f);
         glUniform3f(lightColLoc, 1.0f, 1.0f, 1.0f);
         
         if (modelLoc >= 0) glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
         if (viewLoc  >= 0) glUniformMatrix4fv(viewLoc,  1, GL_FALSE, glm::value_ptr(view));
         if (projLoc  >= 0) glUniformMatrix4fv(projLoc,  1, GL_FALSE, glm::value_ptr(projection));
-        
+
+        /// Updating the viewport every frame
         int width, height;
         glfwGetFramebufferSize(window, &width, &height);
         glViewport(0, 0, width, height);
-        
+
+        /// Swaping the buffers
         glfwSwapBuffers(window);
     }
 
