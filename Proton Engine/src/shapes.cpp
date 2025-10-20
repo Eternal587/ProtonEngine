@@ -4,8 +4,6 @@
 //
 //  Created by VibingCatt on 10/11/25.
 //
-
-
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #include "shapes.h"
@@ -15,6 +13,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 
+
 Cube::Cube(const glm::vec3& pos, const glm::vec3& dim, const glm::vec3& col, const std::string& path, glm::vec3 mipmap, const float shine)
     : position(pos), dimensions(dim), color(col), pathtotexture(path), tiles(mipmap), shinyness(shine)
 {
@@ -23,15 +22,17 @@ Cube::Cube(const glm::vec3& pos, const glm::vec3& dim, const glm::vec3& col, con
 }
 
 void Cube::setupMesh() {
+    /// Getting the Dimensions and pos of the cube
     float w = dimensions.x;
     float h = dimensions.y;
     float d = dimensions.z;
-    
+
+    /// Getting the Mipmap for each side
     float tx = tiles.x;
     float ty = tiles.y;
     float tz = tiles.z;
     
-
+    /// (Pos, Color, Tex Corrdinates, Normal Vector, Speccular Strength)
     float verts[] = {
         
         // Back face (Z = 0)
@@ -71,7 +72,7 @@ void Cube::setupMesh() {
         0, h, d,   color.r, color.g, color.b,  0.0f, tz, 0.0f, 1.0f, 0.0f, shinyness
     };
 
-
+    /// Indices (always the same for cubes)
     unsigned int inds[] = {
         0,1,2,  2,3,0,        // back
         4,5,6,  6,7,4,        // front
@@ -114,12 +115,16 @@ void Cube::setupMesh() {
     glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, 12 * sizeof(float), (void*)(11 * sizeof(float)));
     glEnableVertexAttribArray(4);
     
-    
+    /// Telling stbi to flip the images because by default the images are upside down
     stbi_set_flip_vertically_on_load(true);
     int width, height, nr_channels;
+
+    /// Setting up the texture data
     unsigned char *data = stbi_load(pathtotexture.c_str(), &width, &height, &nr_channels, 0);
-    
+
+    /// Generating the textures glGenTextures(amount, texture)
     glGenTextures(1, &texture);
+    /// Binding the texture glBindTexture(texture_type, texture)
     glBindTexture(GL_TEXTURE_2D, texture);
 
     // wrapping and filtering
@@ -135,19 +140,23 @@ void Cube::setupMesh() {
     } else {
         std::cout << "Failed to load the texture\n";
     }
-    
+
+    /// Freeing up the data
     stbi_image_free(data);
 }
 
 void Cube::Render(unsigned int shaderProgram) {
+        /// Modifing the position of the cube from 0, 0, 0 to its actual specified posiion
         glm::mat4 model = glm::translate(glm::mat4(1.0f), position);
         unsigned int modelLoc = glGetUniformLocation(shaderProgram, "model");
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
+        /// Activating and rebinding the texture the submiting it to the shader to render
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture);
         glUniform1i(glGetUniformLocation(shaderProgram, "texture1"), 0);
 
+        /// Rebinding the VAO and telling OpenGL to draw call of the Triangles on the cube
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 }
