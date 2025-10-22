@@ -20,6 +20,7 @@ public:
     unsigned int texture;
     glm::vec3 tiles;
     float shinyness;
+    std::string name;
 
     Cube(const glm::vec3& pos, const glm::vec3& dim, const glm::vec3& col, const std::string& path, glm::vec3 mipmap, float shine);
     void Render(unsigned int shaderProgram);

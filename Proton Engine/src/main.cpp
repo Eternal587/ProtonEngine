@@ -16,16 +16,25 @@
 
 /// Windows Specific Lib
 // #include <windows.h>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <cmath>
+#include "imgui/imgui.h"
+#include "imgui/backends/imgui_impl_glfw.h"
+#include "imgui/backends/imgui_impl_opengl3.h"
 
 /// Proton Engine Specific Headers
 #include "shapes.h"
 #include "shapes_renderer.h"
 
+<<<<<<< Updated upstream
 /// Yaw - Side to Side Angle, Pitch - Up and Down Angle
+=======
+int cameramovement = 1;
+
+>>>>>>> Stashed changes
 float yaw = -90.0f; // start facing forward (−Z)
 float pitch = 0.0f;
 
@@ -41,13 +50,36 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {    
     /// The Sensitivty of the Mouse - TODO: ADD ADJUSTABLE SETTING FOR SENSITIVITY
     static float sensitivity = 0.2f;
+<<<<<<< Updated upstream
 
     /// IF its the first mouse movement set the lastX and lastY to the current pos of the mouse and set firstMouse to false
     if (firstMouse) {
+=======
+    
+    if(cameramovement == 1) {
+        if (firstMouse) {
+            lastX = xpos;
+            lastY = ypos;
+            firstMouse = false;
+        }
+        
+        float xoffset = xpos - lastX;
+        float yoffset = lastY - ypos;
+>>>>>>> Stashed changes
         lastX = xpos;
         lastY = ypos;
-        firstMouse = false;
+        
+        xoffset *= sensitivity;
+        yoffset *= sensitivity;
+        
+        yaw   += xoffset;
+        pitch += yoffset;
+        
+        // clamp the pitch so we don't flip upside down
+        if (pitch > 89.0f)  pitch = 89.0f;
+        if (pitch < -89.0f) pitch = -89.0f;
     }
+<<<<<<< Updated upstream
 
     /// Get the Offset of the last Mouse Pos and Current Pos
     float xoffset = xpos - lastX;
@@ -68,6 +100,8 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
     // clamp the pitch so we don't flip upside down
     if (pitch > 89.0f)  pitch = 89.0f;
     if (pitch < -89.0f) pitch = -89.0f;
+=======
+>>>>>>> Stashed changes
 }
 
 
@@ -195,7 +229,7 @@ static unsigned int create_shaders(const std::string& vertex_shader, const std::
     unsigned int vs = compile_shader(vertex_shader, GL_VERTEX_SHADER);
     unsigned int fs = compile_shader(fragment_shader, GL_FRAGMENT_SHADER);
     
-    /// At taching the shaders to the program
+    /// Attaching the shaders to the program
     glAttachShader(program, vs);
     glAttachShader(program, fs);
     
@@ -210,6 +244,7 @@ static unsigned int create_shaders(const std::string& vertex_shader, const std::
     return program;
 }
 
+/// Fallback Shader (not currently setup)
 const char* fallback_vertex = R"(
 #version 330 core
 layout (location = 0) in vec2 aPos;
@@ -310,9 +345,14 @@ int main()
     
     std::cout << "Executable Being Run at: " << filepath << std::endl;
     
+<<<<<<< Updated upstream
     bool debug = false;
 
     /// If I'm Debugging in xcode it runs the executable in a very specific spot that does not contain the resources folder, meaning I wont be able to access my textures, models, and shaders
+=======
+    bool debug = true;
+    
+>>>>>>> Stashed changes
     if (debug == true) {
         filepath = "/Users/vibingcatt/Documents/GitHub/ProtonEngine/Proton Engine/src";
     }
@@ -353,6 +393,9 @@ int main()
     Cube wall2(glm::vec3(-0.5f, 0.0f, 0.0f), glm::vec3(0.5f, 1.5f, 10.0f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "/resources/textures/stone_bricks.png", glm::vec3(2.0f, 6.0f, 30.0f), 0.1f);
     Cube wall3(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(10.0f, 1.5f, 0.5f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "/resources/textures/stone_bricks.png", glm::vec3(30.0f, 6.0f, 2.0f), 0.1f);
     Cube wall4(glm::vec3(10.0f, 0.0f, 0.0f), glm::vec3(0.5f, 1.5f, 10.0f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "/resources/textures/stone_bricks.png", glm::vec3(2.0f, 6.0f, 30.0f), 0.1f);
+    
+    
+    
 
     /// Struct for the camera object that contains the yaw (side to side), the pitch (up and down) and the position
     struct Camera {
@@ -420,12 +463,35 @@ int main()
     const GLFWvidmode* mode = glfwGetVideoMode(primaryMonitor);
 
     glfwSetWindowMonitor(window, primaryMonitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+<<<<<<< Updated upstream
 
     /// Main Game Loop
     while (!glfwWindowShouldClose(window))
     {
         
         // Checking for the Quit Button,resize button, ect
+=======
+    
+    
+    
+    
+    
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    ImGui::StyleColorsDark();
+
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init("#version 330");
+
+    static int cubeCounter = 0;
+    
+
+    
+    while (!glfwWindowShouldClose(window))
+    {
+        // input + timing
+>>>>>>> Stashed changes
         glfwPollEvents();
 
         // Update camera front vector from yaw & pitch 
@@ -438,6 +504,7 @@ int main()
         /// Get the Current Time
         float pt = t;
         float t = glfwGetTime();
+<<<<<<< Updated upstream
 
         float deltatime = t - pt;
         
@@ -452,6 +519,25 @@ int main()
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) player.position += speed * camera_right; /// Going to the right based on the right vectir
 
         /// Preparing the Matirces
+=======
+
+        /// Checking if a key is pressed -> moving the camera because of it
+        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) player.position += speed * camera_front;
+        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) player.position -= speed * camera_front;
+        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) player.position.y += speed;
+        if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) player.position.y -= speed;
+        glm::vec3 camera_right = glm::normalize(glm::cross(camera_front, glm::vec3(0.0f, 1.0f, 0.0f)));
+        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) player.position -= speed * camera_right;
+        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) player.position += speed * camera_right;
+        if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) cameramovement ^= 1;
+        
+        if (cameramovement == 1) {
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        } else if (cameramovement == 0) {
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        }
+        // Prepare matrices (recompute each frame)
+>>>>>>> Stashed changes
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
         glm::mat4 view = glm::lookAt(player.position, player.position + camera_front, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -462,11 +548,59 @@ int main()
         /// Getting the aspect ratio based on the width and height
         float aspect = (fbh > 0) ? (float)fbw / (float)fbh : 4.0f/3.0f;
         glm::mat4 projection = glm::perspective(glm::radians(45.0f), aspect, 0.1f, 100.0f);
+        
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+        
+        ImGui::Begin("Object Manager");
+        
+        const auto& cubes = Renderer::GetCubes();
+        for (size_t i = 0; i < cubes.size(); ++i) {
+            Cube* cube = cubes[i];
 
+            // Display some info about the cube
+            ImGui::Text("Cube %zu:", i);
+            
+            ImGui::SliderFloat3(("Cube " + std::to_string(i) + " Position").c_str(), &cube->position.x, -10.0f, 10.0f);
+            ImGui::ColorEdit3(("Cube " + std::to_string(i) + " Color").c_str(), &cube->color.r);
+
+            ImGui::Separator();
+        }
+
+        if (ImGui::Button("Add Cube")) {
+            // Increment counter so each cube has a different position
+            cubeCounter++;
+
+            // Example: position new cubes in a line along X
+            glm::vec3 newPos(cubeCounter * 2.0f, 0.0f, 0.0f);
+            glm::vec3 dimensions(1.0f, 1.0f, 1.0f);
+            glm::vec3 color(1.0f, 0.0f, 0.0f); // red cube
+            std::string texturePath = filepath + "/resources/textures/cat.jpg"; // your texture path
+            glm::vec3 tiles(1.0f, 1.0f, 1.0f);
+            float shininess = 0.5f;
+
+            // Create a new cube on the heap
+            Cube* newCube = new Cube(newPos, dimensions, color, texturePath, tiles, shininess);
+
+            // Renderer::RegisterCube is called automatically in Cube constructor
+        }
+
+        ImGui::End(); // Always call End() for every Begin()
+
+        
+        
+        
+        
+        
         // render
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glUseProgram(shader);
         Renderer::RenderAll(shader);
+        
+        // Render everything
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
         // upload uniforms AFTER glUseProgram
         int modelLoc = glGetUniformLocation(shader, "model");
@@ -496,9 +630,11 @@ int main()
         glfwSwapBuffers(window);
     }
 
-    /// Destroying the GLFW Window
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+
     glfwDestroyWindow(window);
-    
-    /// Terminating GLFW
     glfwTerminate();
+
 }
