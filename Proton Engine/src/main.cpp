@@ -276,7 +276,7 @@ int main()
     
     std::cout << "Executable Being Run at: " << filepath << std::endl;
     
-    bool debug = false;
+    bool debug = true;
     
     if (debug == true) {
         filepath = "/Users/vibingcatt/Documents/GitHub/ProtonEngine/Proton Engine/src";
