@@ -30,7 +30,12 @@
 #include "shapes_renderer.h"
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 /// Yaw - Side to Side Angle, Pitch - Up and Down Angle
+=======
+int cameramovement = 1;
+
+>>>>>>> Stashed changes
 =======
 int cameramovement = 1;
 
@@ -51,10 +56,13 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
     /// The Sensitivty of the Mouse - TODO: ADD ADJUSTABLE SETTING FOR SENSITIVITY
     static float sensitivity = 0.2f;
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 
     /// IF its the first mouse movement set the lastX and lastY to the current pos of the mouse and set firstMouse to false
     if (firstMouse) {
 =======
+=======
+>>>>>>> Stashed changes
     
     if(cameramovement == 1) {
         if (firstMouse) {
@@ -65,6 +73,9 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
         
         float xoffset = xpos - lastX;
         float yoffset = lastY - ypos;
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
         lastX = xpos;
         lastY = ypos;
@@ -79,6 +90,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
         if (pitch > 89.0f)  pitch = 89.0f;
         if (pitch < -89.0f) pitch = -89.0f;
     }
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 
     /// Get the Offset of the last Mouse Pos and Current Pos
@@ -100,6 +112,8 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
     // clamp the pitch so we don't flip upside down
     if (pitch > 89.0f)  pitch = 89.0f;
     if (pitch < -89.0f) pitch = -89.0f;
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 }
@@ -346,10 +360,13 @@ int main()
     std::cout << "Executable Being Run at: " << filepath << std::endl;
     
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     bool debug = false;
 
     /// If I'm Debugging in xcode it runs the executable in a very specific spot that does not contain the resources folder, meaning I wont be able to access my textures, models, and shaders
 =======
+=======
+>>>>>>> Stashed changes
     bool debug = true;
     
 >>>>>>> Stashed changes
@@ -464,6 +481,7 @@ int main()
 
     glfwSetWindowMonitor(window, primaryMonitor, 0, 0, mode->width, mode->height, mode->refreshRate);
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 
     /// Main Game Loop
     while (!glfwWindowShouldClose(window))
@@ -490,6 +508,27 @@ int main()
     
     while (!glfwWindowShouldClose(window))
     {
+=======
+    
+    
+    
+    
+    
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    ImGui::StyleColorsDark();
+
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init("#version 330");
+
+    static int cubeCounter = 0;
+    
+
+    
+    while (!glfwWindowShouldClose(window))
+    {
+>>>>>>> Stashed changes
         // input + timing
 >>>>>>> Stashed changes
         glfwPollEvents();
@@ -505,9 +544,12 @@ int main()
         float pt = t;
         float t = glfwGetTime();
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 
         float deltatime = t - pt;
         
+=======
+>>>>>>> Stashed changes
 
         /// Checking if a key is pressed -> moving the camera because of it
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) player.position += speed * camera_front; /// Moving the camera forward based on the Forward Vector
