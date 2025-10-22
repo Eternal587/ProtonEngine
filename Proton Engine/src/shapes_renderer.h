@@ -15,8 +15,7 @@ class Renderer {
 public:
     static void RegisterCube(Cube* cube);
     static void RenderAll(unsigned int shaderProgram);
-    static const std::vector<Cube*>& GetCubes() { return cubes; }
-    
+
 private:
     static std::vector<Cube*> cubes;
 };
