@@ -15,8 +15,8 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 
-Cube::Cube(const glm::vec3& pos, const glm::vec3& dim, const glm::vec3& col, const std::string& path, glm::vec3 mipmap, const float shine)
-    : position(pos), dimensions(dim), color(col), pathtotexture(path), tiles(mipmap), shinyness(shine)
+Cube::Cube(std::string cubename, const glm::vec3& pos, const glm::vec3& dim, const glm::vec3& col, const std::string& path, glm::vec3 mipmap, const float shine)
+: position(pos), dimensions(dim), color(col), pathtotexture(path), tiles(mipmap), shinyness(shine), name(cubename)
 {
     setupMesh();
     Renderer::RegisterCube(this); // auto-register itself

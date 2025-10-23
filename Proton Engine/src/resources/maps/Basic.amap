@@ -1,0 +1,8 @@
+cube1(CUBE, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, "cat.jpg", 1.0f, 1.0f, 1.0f, 0.1f);
+cube2(CUBE, 9.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, "cat.jpg", 1.0f, 1.0f, 1.0f, 0.2f);
+crate(CUBE, 4.75f, 0.0f, 0.0f, 0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f, "crate.png", 1.0f, 1.0f, 1.0f, 0.2f);
+platform(CUBE, 0.0f, -1.0f, 0.0f, 10.0f, 1.0f, 10.0f, 1.0f, 1.0f, 1.0f, "prototype.png", 10.0f, 1.0f, 10.0f, 1.0f);
+wall1(CUBE, 0.0f, 0.0f, -0.5f, 10.0f, 1.5f, 0.5f, 1.0f, 1.0f, 1.0f, "stone_bricks.png", 30.0f, 6.0f, 2.0f, 0.1f);
+wall2(CUBE, -0.5f, 0.0f, 0.0f, 0.5f, 1.5f, 10.0f, 1.0f, 1.0f, 1.0f, "stone_bricks.png", 2.0f, 6.0f, 30.0f, 0.1f);
+wall3(CUBE, 0.0f, 0.0f, 10.0f, 10.0f, 1.5f, 0.5f, 1.0f, 1.0f, 1.0f, "stone_bricks.png", 30.0f, 6.0f, 2.0f, 0.1f);
+wall4(CUBE, 10.0f, 0.0f, 0.0f, 0.5f, 1.5f, 10.0f, 1.0f, 1.0f, 1.0f, "stone_bricks.png", 2.0f, 6.0f, 30.0f, 0.1f, NONE);
