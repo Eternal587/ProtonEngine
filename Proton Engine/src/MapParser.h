@@ -6,3 +6,23 @@
 //
 
 #pragma once
+#include "shapes.h"
+#include <vector>
+#include <string>
+
+struct Map {
+    std::vector<Cube*> Cubes;
+};
+
+struct Object {
+    std::string NAME;
+    std::string TYPE_OF_OBJECT;
+    float X, Y, Z;
+    float W, H, D;
+    float R, G, B;
+    std::string PATH_TO_TEXTURE;
+    float MIPMAP_LEVELX, MIPMAP_LEVELY, MIPMAP_LEVELZ;
+    float SHINYNESS;
+};
+
+Map parse_map(const std::string map);
