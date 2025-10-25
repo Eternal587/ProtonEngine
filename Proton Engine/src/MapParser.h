@@ -10,10 +10,6 @@
 #include <vector>
 #include <string>
 
-struct Map {
-    std::vector<Cube*> Cubes;
-};
-
 struct Object {
     std::string NAME;
     std::string TYPE_OF_OBJECT;
@@ -25,4 +21,4 @@ struct Object {
     float SHINYNESS;
 };
 
-Map parse_map(const std::string map);
+void parse_map(const std::string map);

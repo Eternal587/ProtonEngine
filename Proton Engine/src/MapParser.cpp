@@ -6,6 +6,8 @@
 //
 
 #include "MapParser.h"
+#include "shapes_renderer.h"
+#include "shapes.h"
 #include <fstream>
 #include <string>
 #include <sstream>
@@ -39,7 +41,7 @@ std::string getExePath() {
 
 const bool debug = true;
 
-Map parse_map(std::string map) {
+void parse_map(std::string map) {
     std::vector<Cube*> Cubes;
     std::string filepath = getExePath() + "/resources/maps/" + map;
     
@@ -48,7 +50,7 @@ Map parse_map(std::string map) {
     }
     
     /// Specifies the File your accessing
-    std::ifstream stream(map);
+    std::ifstream stream(filepath);
     json data;
     stream >> data;
     
@@ -72,9 +74,25 @@ Map parse_map(std::string map) {
         obj.MIPMAP_LEVELY = item["MIPMAP_LEVELY"];
         obj.MIPMAP_LEVELZ = item["MIPMAP_LEVELZ"];
         obj.SHINYNESS = item["SHINYNESS"];
-
+        
         objects.push_back(obj);
     }
-
-    return {Cubes};
+    
+    filepath = getExePath() + "/resources/textures/";
+    
+    if (debug == true) {
+        filepath = "/Users/vibingcatt/Documents/GitHub/ProtonEngine/Proton Engine/src/resources/textures/";
+    }
+    
+    for(Object objnum : objects) {
+        if(objnum.TYPE_OF_OBJECT == "CUBE") {
+            new Cube(objnum.NAME,
+                     glm::vec3(objnum.X, objnum.Y, objnum.Z),
+                     glm::vec3(objnum.W, objnum.H, objnum.D),
+                     glm::vec3(objnum.R, objnum.G, objnum.B),
+                     filepath + objnum.PATH_TO_TEXTURE,
+                     glm::vec3(objnum.MIPMAP_LEVELX, objnum.MIPMAP_LEVELY, objnum.MIPMAP_LEVELZ),
+                     objnum.SHINYNESS);
+        }
+    };
 }

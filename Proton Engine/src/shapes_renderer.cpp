@@ -9,11 +9,13 @@
 #include "shapes.h"
 #include "glad.h"
 #include <glm/glm.hpp>
+#include <iostream>
 
 std::vector<Cube*> Renderer::cubes;
 
 void Renderer::RegisterCube(Cube* cube) {
     cubes.push_back(cube);
+    std::cout << "Registered Cube\n";
 }
 
 void Renderer::RenderAll(unsigned int shaderProgram) {

@@ -24,6 +24,7 @@
 /// Proton Engine Specific Headers
 #include "shapes.h"
 #include "shapes_renderer.h"
+#include "MapParser.h"
 
 float yaw = -90.0f; // start facing forward (−Z)
 float pitch = 0.0f;
@@ -302,6 +303,7 @@ int main()
     Cube wall4(glm::vec3(10.0f, 0.0f, 0.0f), glm::vec3(0.5f, 1.5f, 10.0f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "resources\\textures\\stone_bricks.png", glm::vec3(2.0f, 6.0f, 30.0f), 0.1f);
     */
     
+    /*
     Cube cube1("cube1", glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "/resources/textures/cat.jpg", glm::vec3(1.0f, 1.0f, 1.0f), 0.1f);
     Cube cube2("cube2", glm::vec3(9.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "/resources/textures/cat.jpg", glm::vec3(1.0f, 1.0f, 1.0f), 0.2f);
     
@@ -313,7 +315,10 @@ int main()
     Cube wall2("wall2", glm::vec3(-0.5f, 0.0f, 0.0f), glm::vec3(0.5f, 1.5f, 10.0f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "/resources/textures/stone_bricks.png", glm::vec3(2.0f, 6.0f, 30.0f), 0.1f);
     Cube wall3("wall3", glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(10.0f, 1.5f, 0.5f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "/resources/textures/stone_bricks.png", glm::vec3(30.0f, 6.0f, 2.0f), 0.1f);
     Cube wall4("wall4", glm::vec3(10.0f, 0.0f, 0.0f), glm::vec3(0.5f, 1.5f, 10.0f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "/resources/textures/stone_bricks.png", glm::vec3(2.0f, 6.0f, 30.0f), 0.1f);
-
+     */
+    
+    parse_map("Basic.amap");
+    
     struct Camera {
         glm::vec3 position;
         float yaw;   // rotation around Y axis (like your cangle)
