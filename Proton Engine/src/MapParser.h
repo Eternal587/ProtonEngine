@@ -19,6 +19,7 @@ struct Object {
     std::string PATH_TO_TEXTURE;
     float MIPMAP_LEVELX, MIPMAP_LEVELY, MIPMAP_LEVELZ;
     float SHINYNESS;
+    float ROTATION_X, ROTATION_Y, ROTATION_Z;
 };
 
 void parse_map(const std::string map);

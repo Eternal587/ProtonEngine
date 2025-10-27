@@ -20,9 +20,31 @@ public:
     unsigned int texture;
     glm::vec3 tiles;
     float shinyness;
+    float degree_x, degree_y, degree_z;
     std::string name;
 
-    Cube(std::string cube_name, const glm::vec3& pos, const glm::vec3& dim, const glm::vec3& col, const std::string& path, glm::vec3 mipmap, float shine);
+    Cube(std::string cube_name, const glm::vec3& pos, const glm::vec3& dim, const glm::vec3& col, const std::string& path, glm::vec3 mipmap, float shine, float rotation_x, float rotation_y, float rotation_z);
+    void Render(unsigned int shaderProgram);
+
+private:
+    void setupMesh();
+    void recalculate_normals();
+};
+
+class Slope {
+public:
+    unsigned int VAO, VBO, EBO;
+    glm::vec3 position;
+    glm::vec3 dimensions;
+    glm::vec3 color;
+    std::string pathtotexture;
+    unsigned int texture;
+    glm::vec3 tiles;
+    float shinyness;
+    float degree_x, degree_y, degree_z;
+    std::string name;
+
+    Slope(std::string slope_name, const glm::vec3& pos, const glm::vec3& dim, const glm::vec3& col, const std::string& path, glm::vec3 mipmap, float shine, float rotation_x, float rotation_y, float rotation_z);
     void Render(unsigned int shaderProgram);
 
 private:

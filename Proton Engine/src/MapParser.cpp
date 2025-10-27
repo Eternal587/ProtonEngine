@@ -74,6 +74,9 @@ void parse_map(std::string map) {
         obj.MIPMAP_LEVELY = item["MIPMAP_LEVELY"];
         obj.MIPMAP_LEVELZ = item["MIPMAP_LEVELZ"];
         obj.SHINYNESS = item["SHINYNESS"];
+        obj.ROTATION_X = item["ROTATION_X"];
+        obj.ROTATION_Y = item["ROTATION_Y"];
+        obj.ROTATION_Z = item["ROTATION_Z"];
         
         objects.push_back(obj);
     }
@@ -92,7 +95,16 @@ void parse_map(std::string map) {
                      glm::vec3(objnum.R, objnum.G, objnum.B),
                      filepath + objnum.PATH_TO_TEXTURE,
                      glm::vec3(objnum.MIPMAP_LEVELX, objnum.MIPMAP_LEVELY, objnum.MIPMAP_LEVELZ),
-                     objnum.SHINYNESS);
+                     objnum.SHINYNESS, objnum.ROTATION_X, objnum.ROTATION_Y, objnum.ROTATION_Z);
+        }
+        if(objnum.TYPE_OF_OBJECT == "SLOPE") {
+            new Slope(objnum.NAME,
+                     glm::vec3(objnum.X, objnum.Y, objnum.Z),
+                     glm::vec3(objnum.W, objnum.H, objnum.D),
+                     glm::vec3(objnum.R, objnum.G, objnum.B),
+                     filepath + objnum.PATH_TO_TEXTURE,
+                     glm::vec3(objnum.MIPMAP_LEVELX, objnum.MIPMAP_LEVELY, objnum.MIPMAP_LEVELZ),
+                     objnum.SHINYNESS, objnum.ROTATION_X, objnum.ROTATION_Y, objnum.ROTATION_Z);
         }
     };
 }

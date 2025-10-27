@@ -25,6 +25,7 @@
 #include "shapes.h"
 #include "shapes_renderer.h"
 #include "MapParser.h"
+#include "Models.h"
 
 float yaw = -90.0f; // start facing forward (−Z)
 float pitch = 0.0f;
@@ -288,34 +289,6 @@ int main()
     unsigned int shader = create_shaders(source.vertex_source, source.fragment_source);
     
     glUseProgram(shader);
-    
-    /*
-    Cube cube1(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "resources\\textures\\cat.jpg", glm::vec3(1.0f, 1.0f, 1.0f), 0.1f);
-    Cube cube2(glm::vec3(9.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "resources\\textures\\cat.jpg", glm::vec3(1.0f, 1.0f, 1.0f), 0.2f);
-    
-    Cube crate(glm::vec3(4.75f, 0.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "resources\\textures\\crate.png", glm::vec3(1.0f, 1.0f, 1.0f), 0.2f);
-    
-    Cube platform(glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(10.0f, 1.0f, 10.0f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "resources\\textures\\prototype.png", glm::vec3(10.0f, 1.0f, 10.0f), 1.0f);
-    
-    Cube wall1(glm::vec3(0.0f, 0.0f, -0.5f), glm::vec3(10.0f, 1.5f, 0.5f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "resources\\textures\\stone_bricks.png", glm::vec3(30.0f, 6.0f, 2.0f), 0.1f);
-    Cube wall2(glm::vec3(-0.5f, 0.0f, 0.0f), glm::vec3(0.5f, 1.5f, 10.0f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "resources\\textures\\stone_bricks.png", glm::vec3(2.0f, 6.0f, 30.0f), 0.1f);
-    Cube wall3(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(10.0f, 1.5f, 0.5f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "resources\\textures\\stone_bricks.png", glm::vec3(30.0f, 6.0f, 2.0f), 0.1f);
-    Cube wall4(glm::vec3(10.0f, 0.0f, 0.0f), glm::vec3(0.5f, 1.5f, 10.0f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "resources\\textures\\stone_bricks.png", glm::vec3(2.0f, 6.0f, 30.0f), 0.1f);
-    */
-    
-    /*
-    Cube cube1("cube1", glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "/resources/textures/cat.jpg", glm::vec3(1.0f, 1.0f, 1.0f), 0.1f);
-    Cube cube2("cube2", glm::vec3(9.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "/resources/textures/cat.jpg", glm::vec3(1.0f, 1.0f, 1.0f), 0.2f);
-    
-    Cube crate("crate", glm::vec3(4.75f, 0.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "/resources/textures/crate.png", glm::vec3(1.0f, 1.0f, 1.0f), 0.2f);
-    
-    Cube platform("platform", glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(10.0f, 1.0f, 10.0f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "/resources/textures/prototype.png", glm::vec3(10.0f, 1.0f, 10.0f), 1.0f);
-    
-    Cube wall1("wall1", glm::vec3(0.0f, 0.0f, -0.5f), glm::vec3(10.0f, 1.5f, 0.5f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "/resources/textures/stone_bricks.png", glm::vec3(30.0f, 6.0f, 2.0f), 0.1f);
-    Cube wall2("wall2", glm::vec3(-0.5f, 0.0f, 0.0f), glm::vec3(0.5f, 1.5f, 10.0f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "/resources/textures/stone_bricks.png", glm::vec3(2.0f, 6.0f, 30.0f), 0.1f);
-    Cube wall3("wall3", glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(10.0f, 1.5f, 0.5f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "/resources/textures/stone_bricks.png", glm::vec3(30.0f, 6.0f, 2.0f), 0.1f);
-    Cube wall4("wall4", glm::vec3(10.0f, 0.0f, 0.0f), glm::vec3(0.5f, 1.5f, 10.0f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "/resources/textures/stone_bricks.png", glm::vec3(2.0f, 6.0f, 30.0f), 0.1f);
-     */
     
     parse_map("Basic.amap");
     

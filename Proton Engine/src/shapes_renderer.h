@@ -10,12 +10,15 @@
 #include <string>
 
 class Cube;
+class Slope;
 
 class Renderer {
 public:
+    static void RegisterSlope(Slope* slope);
     static void RegisterCube(Cube* cube);
     static void RenderAll(unsigned int shaderProgram);
 
 private:
     static std::vector<Cube*> cubes;
+    static std::vector<Slope*> slopes;
 };
