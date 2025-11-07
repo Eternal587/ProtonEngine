@@ -49,6 +49,7 @@ public:
 
 private:
     void setupMesh();
+    void recalculate_normals();
 };
 
 struct LightSource {
@@ -57,3 +58,5 @@ struct LightSource {
     
     LightSource(const glm::vec3& pos, const glm::vec3& col);
 };
+
+glm::vec3 get_normal(glm::vec3 pos1, glm::vec3 pos2, glm::vec3 pos3);

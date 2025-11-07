@@ -46,7 +46,7 @@
     "TYPE_OF_OBJECT": "CUBE",
     "X": 4.75,
     "Y": 0.0,
-    "Z": 0.0,
+    "Z": 1.0,
     "W": 0.5,
     "H": 0.5,
     "D": 0.5,
@@ -59,7 +59,7 @@
     "MIPMAP_LEVELZ": 1.0,
     "SHINYNESS": 0.2,
     "ROTATION_X": 0.0,
-    "ROTATION_Y": 0.0,
+    "ROTATION_Y": 90.0,
     "ROTATION_Z": 0.0
   },
   {

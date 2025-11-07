@@ -141,10 +141,88 @@ void Cube::setupMesh() {
     recalculate_normals();
 }
 
+void Cube::recalculate_normals() {
+    float w = dimensions.x;
+    float h = dimensions.y;
+    float d = dimensions.z;
+    
+    float tx = tiles.x;
+    float ty = tiles.y;
+    float tz = tiles.z;
+    
+    glm::vec3 normals[6] {{0.0f, 0.0f, -1.0f,}, {0.0f, 0.0f, 1.0f,}, {-1.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, -1.0f, 0.0f}, {0.0f, 1.0f, 0.0f}};
+    
+    glm::vec3 rotate_x = glm::vec3(1.0f, 0.0f, 0.0f);
+    glm::vec3 rotate_y = glm::vec3(0.0f, 1.0f, 0.0f);
+    glm::vec3 rotate_z = glm::vec3(0.0f, 0.0f, 1.0f);
+    
+    glm::mat4 rotate_matrix_x = glm::mat4(1.0f);
+    glm::mat4 rotate_matrix_y = glm::mat4(1.0f);
+    glm::mat4 rotate_matrix_z = glm::mat4(1.0f);
+    
+    rotate_matrix_x = glm::rotate(rotate_matrix_x, glm::radians(degree_x), rotate_x);
+    rotate_matrix_y = glm::rotate(rotate_matrix_y, glm::radians(degree_y), rotate_y);
+    rotate_matrix_z = glm::rotate(rotate_matrix_z, glm::radians(degree_z), rotate_z);
+
+    glm::mat3 normal_matrix_x = glm::mat3(rotate_matrix_x);
+    glm::mat3 normal_matrix_y = glm::mat3(rotate_matrix_y);
+    glm::mat3 normal_matrix_z = glm::mat3(rotate_matrix_z);
+    
+    for(int i=0; i < 6; i++) {
+        glm::vec4 temp_vector = rotate_matrix_x * rotate_matrix_y * rotate_matrix_z * glm::vec4(normals[i], 1.0f);
+        normals[i] = glm::normalize(glm::vec3(temp_vector));
+    }
+    
+    float verts[] = {
+        
+        // Back face (Z = 0)
+        0, 0, 0,   color.r, color.g, color.b,  0.0f, 0.0f, normals[0].x, normals[0].y, normals[0].z, shinyness,
+        w, 0, 0,   color.r, color.g, color.b,  tx, 0.0f, normals[0].x, normals[0].y, normals[0].z, shinyness,
+        w, h, 0,   color.r, color.g, color.b,  tx, ty, normals[0].x, normals[0].y, normals[0].z, shinyness,
+        0, h, 0,   color.r, color.g, color.b,  0.0f, ty, normals[0].x, normals[0].y, normals[0].z, shinyness,
+        
+        // Front face (Z = d)
+        0, 0, d,   color.r, color.g, color.b,  0.0f, 0.0f, normals[1].x, normals[1].y, normals[1].z, shinyness,
+        w, 0, d,   color.r, color.g, color.b,  tx, 0.0f, normals[1].x, normals[1].y, normals[1].z, shinyness,
+        w, h, d,   color.r, color.g, color.b,  tx, ty, normals[1].x, normals[1].y, normals[1].z, shinyness,
+        0, h, d,   color.r, color.g, color.b,  0.0f, ty, normals[1].x, normals[1].y, normals[1].z, shinyness,
+
+        // Left face (X = 0)
+        0, 0, 0,   color.r, color.g, color.b,  0.0f, 0.0f, normals[2].x, normals[2].y, normals[2].z, shinyness,
+        0, 0, d,   color.r, color.g, color.b,  tz, 0.0f, normals[2].x, normals[2].y, normals[2].z, shinyness,
+        0, h, d,   color.r, color.g, color.b,  tz, ty, normals[2].x, normals[2].y, normals[2].z, shinyness,
+        0, h, 0,   color.r, color.g, color.b,  0.0f, ty, normals[2].x, normals[2].y, normals[2].z, shinyness,
+
+        // Right face (X = w)
+        w, 0, 0,   color.r, color.g, color.b,  0.0f, 0.0f, normals[3].x, normals[3].y, normals[3].z,shinyness,
+        w, 0, d,   color.r, color.g, color.b,  tz, 0.0f, normals[3].x, normals[3].y, normals[3].z, shinyness,
+        w, h, d,   color.r, color.g, color.b,  tz, ty, normals[3].x, normals[3].y, normals[3].z, shinyness,
+        w, h, 0,   color.r, color.g, color.b,  0.0f, ty, normals[3].x, normals[3].y, normals[3].z, shinyness,
+
+        // Bottom face (Y = 0)
+        0, 0, 0,   color.r, color.g, color.b,  0.0f, 0.0f, normals[4].x, normals[4].y, normals[4].z, shinyness,
+        w, 0, 0,   color.r, color.g, color.b,  tz, 0.0f, normals[4].x, normals[4].y, normals[4].z, shinyness,
+        w, 0, d,   color.r, color.g, color.b,  tz, tz, normals[4].x, normals[4].y, normals[4].z, shinyness,
+        0, 0, d,   color.r, color.g, color.b,  0.0f, tz, normals[4].x, normals[4].y, normals[4].z, shinyness,
+
+        // Top face (Y = h)
+        0, h, 0,   color.r, color.g, color.b,  0.0f, 0.0f, normals[5].x, normals[5].y, normals[5].z, shinyness,
+        w, h, 0,   color.r, color.g, color.b,  tx, 0.0f, normals[5].x, normals[5].y, normals[5].z, shinyness,
+        w, h, d,   color.r, color.g, color.b,  tx, tz, normals[5].x, normals[5].y, normals[5].z, shinyness,
+        0, h, d,   color.r, color.g, color.b,  0.0f, tz, normals[5].x, normals[5].y, normals[5].z, shinyness
+    };
+    
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
+}
+
 void Cube::Render(unsigned int shaderProgram) {
         glm::mat4 model = glm::translate(glm::mat4(1.0f), position);
         
+        /// Recalculating the Angle and normals each frame
+        model = glm::rotate(model, glm::radians(degree_x), glm::vec3(1.0f, 0.0f, 0.0f));
         model = glm::rotate(model, glm::radians(degree_y), glm::vec3(0.0f, 1.0f, 0.0f));
+        model = glm::rotate(model, glm::radians(degree_z), glm::vec3(0.0f, 0.0f, 1.0f));
         recalculate_normals();
     
     
@@ -272,9 +350,82 @@ void Slope::setupMesh() {
     
 }
 
+void Slope::recalculate_normals() {
+    float w = dimensions.x;
+    float h = dimensions.y;
+    float d = dimensions.z;
+    
+    float tx = tiles.x;
+    float ty = tiles.y;
+    float tz = tiles.z;
+    
+    glm::vec3 normals[6] {{0.0f, -1.0f, 0.0f}, {0.0f, 0.0f, -1.0f}, {0.0f, 0.707f, 0.707f}, {-1.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f}};
+    
+    glm::vec3 rotate_x = glm::vec3(1.0f, 0.0f, 0.0f);
+    glm::vec3 rotate_y = glm::vec3(0.0f, 1.0f, 0.0f);
+    glm::vec3 rotate_z = glm::vec3(0.0f, 0.0f, 1.0f);
+    
+    glm::mat4 rotate_matrix_x = glm::mat4(1.0f);
+    glm::mat4 rotate_matrix_y = glm::mat4(1.0f);
+    glm::mat4 rotate_matrix_z = glm::mat4(1.0f);
+    
+    rotate_matrix_x = glm::rotate(rotate_matrix_x, glm::radians(degree_x), rotate_x);
+    rotate_matrix_y = glm::rotate(rotate_matrix_y, glm::radians(degree_y), rotate_y);
+    rotate_matrix_z = glm::rotate(rotate_matrix_z, glm::radians(degree_z), rotate_z);
+
+    glm::mat3 normal_matrix_x = glm::mat3(rotate_matrix_x);
+    glm::mat3 normal_matrix_y = glm::mat3(rotate_matrix_y);
+    glm::mat3 normal_matrix_z = glm::mat3(rotate_matrix_z);
+    
+    for(int i=0; i < 6; i++) {
+        glm::vec4 temp_vector = rotate_matrix_x * rotate_matrix_y * rotate_matrix_z * glm::vec4(normals[i], 1.0f);
+        normals[i] = glm::normalize(glm::vec3(temp_vector));
+    }
+    
+    float verts[] = {
+        // Bottom face (y = 0)
+        0, 0, 0,    color.r, color.g, color.b,   0.0f, 0.0f,     normals[0].x, normals[0].y, normals[0].z, shinyness,
+        w, 0, 0,    color.r, color.g, color.b,   1.0f, 0.0f,     normals[0].x, normals[0].y, normals[0].z, shinyness,
+        w, 0, d,    color.r, color.g, color.b,   1.0f, 1.0f,     normals[0].x, normals[0].y, normals[0].z, shinyness,
+        0, 0, d,    color.r, color.g, color.b,   0.0f, 1.0f,     normals[0].x, normals[0].y, normals[0].z, shinyness,
+
+        // Back face (Z = 0)
+        0, 0, 0,    color.r, color.g, color.b,   0.0f, 0.0f,     normals[1].x, normals[1].y, normals[1].z, shinyness,
+        w, 0, 0,    color.r, color.g, color.b,   1.0f, 0.0f,     normals[1].x, normals[1].y, normals[1].z, shinyness,
+        w, h, 0,    color.r, color.g, color.b,   1.0f, 1.0f,     normals[1].x, normals[1].y, normals[1].z, shinyness,
+        0, h, 0,    color.r, color.g, color.b,   0.0f, 1.0f,     normals[1].x, normals[1].y, normals[1].z, shinyness,
+
+        // Front slope face (from back top to front bottom)
+        0, h, 0,    color.r, color.g, color.b,   0.0f, 0.0f,     normals[2].x, normals[2].y, normals[2].z, shinyness,
+        w, h, 0,    color.r, color.g, color.b,   1.0f, 0.0f,     normals[2].x, normals[2].y, normals[2].z, shinyness,
+        w, 0, d,    color.r, color.g, color.b,   1.0f, 1.0f,     normals[2].x, normals[2].y, normals[2].z, shinyness,
+        0, 0, d,    color.r, color.g, color.b,   0.0f, 1.0f,     normals[2].x, normals[2].y, normals[2].z, shinyness,
+
+        // Left face
+        0, 0, 0,    color.r, color.g, color.b,   0.0f, 0.0f,    normals[3].x, normals[3].y, normals[3].z, shinyness,
+        0, h, 0,    color.r, color.g, color.b,   1.0f, 0.0f,    normals[3].x, normals[3].y, normals[3].z, shinyness,
+        0, 0, d,    color.r, color.g, color.b,   1.0f, 1.0f,    normals[3].x, normals[3].y, normals[3].z, shinyness,
+
+        // Right face
+        w, 0, 0,    color.r, color.g, color.b,   0.0f, 0.0f,     normals[4].x, normals[4].y, normals[4].z, shinyness,
+        w, h, 0,    color.r, color.g, color.b,   1.0f, 0.0f,     normals[4].x, normals[4].y, normals[4].z, shinyness,
+        w, 0, d,    color.r, color.g, color.b,   1.0f, 1.0f,     normals[4].x, normals[4].y, normals[4].z, shinyness
+    };
+    
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
+}
+
 void Slope::Render(unsigned int shaderProgram) {
         glm::mat4 model = glm::translate(glm::mat4(1.0f), position);
+        
+        /// Recalculating the Angle and normals each frame
+        model = glm::rotate(model, glm::radians(degree_x), glm::vec3(1.0f, 0.0f, 0.0f));
         model = glm::rotate(model, glm::radians(degree_y), glm::vec3(0.0f, 1.0f, 0.0f));
+        model = glm::rotate(model, glm::radians(degree_z), glm::vec3(0.0f, 0.0f, 1.0f));
+        recalculate_normals();
+    
+    
         unsigned int modelLoc = glGetUniformLocation(shaderProgram, "model");
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
@@ -286,70 +437,10 @@ void Slope::Render(unsigned int shaderProgram) {
         glDrawElements(GL_TRIANGLES, 24, GL_UNSIGNED_INT, 0);
 }
 
-void Cube::recalculate_normals() {
-    float w = dimensions.x;
-    float h = dimensions.y;
-    float d = dimensions.z;
-    
-    float tx = tiles.x;
-    float ty = tiles.y;
-    float tz = tiles.z;
-    
-    glm::vec3 normals[6] {{0.0f, 0.0f, -1.0f,}, {0.0f, 0.0f, 1.0f,}, {-1.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, -1.0f, 0.0f}, {0.0f, 1.0f, 0.0f}};
-    
-    glm::mat4 rotate_matrix_x = glm::rotate(glm::mat4(1.0f), glm::radians(degree_x), glm::vec3(1, 0, 0)); /// X axis
-    glm::mat4 rotate_matrix_y = glm::rotate(glm::mat4(1.0f), glm::radians(degree_y), glm::vec3(0, 1, 0)); /// Y axis
-    glm::mat4 rotate_matrix_z = glm::rotate(glm::mat4(1.0f), glm::radians(degree_z), glm::vec3(0, 0, 1)); /// Z axis
-    
-    glm::mat3 normal_matrix_x = glm::transpose(glm::inverse(glm::mat3(rotate_matrix_x)));
-    glm::mat3 normal_matrix_y = glm::transpose(glm::inverse(glm::mat3(rotate_matrix_y)));
-    glm::mat3 normal_matrix_z = glm::transpose(glm::inverse(glm::mat3(rotate_matrix_z)));
-    
-    for(int i=0; i < 6; i++) {
-        normals[i] = glm::normalize((normals[i] * normal_matrix_x));
-        normals[i] = glm::normalize((normals[i] * normal_matrix_y));
-        normals[i] = glm::normalize((normals[i] * normal_matrix_z));
-    }
-    
-    float verts[] = {
-        
-        // Back face (Z = 0)
-        0, 0, 0,   color.r, color.g, color.b,  0.0f, 0.0f, normals[0].x, normals[0].y, normals[0].z, shinyness,
-        w, 0, 0,   color.r, color.g, color.b,  tx, 0.0f, normals[0].x, normals[0].y, normals[0].z, shinyness,
-        w, h, 0,   color.r, color.g, color.b,  tx, ty, normals[0].x, normals[0].y, normals[0].z, shinyness,
-        0, h, 0,   color.r, color.g, color.b,  0.0f, ty, normals[0].x, normals[0].y, normals[0].z, shinyness,
-        
-        // Front face (Z = d)
-        0, 0, d,   color.r, color.g, color.b,  0.0f, 0.0f, normals[1].x, normals[1].y, normals[1].z, shinyness,
-        w, 0, d,   color.r, color.g, color.b,  tx, 0.0f, normals[1].x, normals[1].y, normals[1].z, shinyness,
-        w, h, d,   color.r, color.g, color.b,  tx, ty, normals[1].x, normals[1].y, normals[1].z, shinyness,
-        0, h, d,   color.r, color.g, color.b,  0.0f, ty, normals[1].x, normals[1].y, normals[1].z, shinyness,
 
-        // Left face (X = 0)
-        0, 0, 0,   color.r, color.g, color.b,  0.0f, 0.0f, normals[2].x, normals[2].y, normals[2].z, shinyness,
-        0, 0, d,   color.r, color.g, color.b,  tz, 0.0f, normals[2].x, normals[2].y, normals[2].z, shinyness,
-        0, h, d,   color.r, color.g, color.b,  tz, ty, normals[2].x, normals[2].y, normals[2].z, shinyness,
-        0, h, 0,   color.r, color.g, color.b,  0.0f, ty, normals[2].x, normals[2].y, normals[2].z, shinyness,
-
-        // Right face (X = w)
-        w, 0, 0,   color.r, color.g, color.b,  0.0f, 0.0f, normals[3].x, normals[3].y, normals[3].z,shinyness,
-        w, 0, d,   color.r, color.g, color.b,  tz, 0.0f, normals[3].x, normals[3].y, normals[3].z, shinyness,
-        w, h, d,   color.r, color.g, color.b,  tz, ty, normals[3].x, normals[3].y, normals[3].z, shinyness,
-        w, h, 0,   color.r, color.g, color.b,  0.0f, ty, normals[3].x, normals[3].y, normals[3].z, shinyness,
-
-        // Bottom face (Y = 0)
-        0, 0, 0,   color.r, color.g, color.b,  0.0f, 0.0f, normals[4].x, normals[4].y, normals[4].z, shinyness,
-        w, 0, 0,   color.r, color.g, color.b,  tz, 0.0f, normals[4].x, normals[4].y, normals[4].z, shinyness,
-        w, 0, d,   color.r, color.g, color.b,  tz, tz, normals[4].x, normals[4].y, normals[4].z, shinyness,
-        0, 0, d,   color.r, color.g, color.b,  0.0f, tz, normals[4].x, normals[4].y, normals[4].z, shinyness,
-
-        // Top face (Y = h)
-        0, h, 0,   color.r, color.g, color.b,  0.0f, 0.0f, normals[5].x, normals[5].y, normals[5].z, shinyness,
-        w, h, 0,   color.r, color.g, color.b,  tx, 0.0f, normals[5].x, normals[5].y, normals[5].z, shinyness,
-        w, h, d,   color.r, color.g, color.b,  tx, tz, normals[5].x, normals[5].y, normals[5].z, shinyness,
-        0, h, d,   color.r, color.g, color.b,  0.0f, tz, normals[5].x, normals[5].y, normals[5].z, shinyness
-    };
+glm::vec3 get_normal(glm::vec3 pos1, glm::vec3 pos2, glm::vec3 pos3) {
+    glm::vec3 edge1 = pos2 - pos1;
+    glm::vec3 edge2 = pos3 - pos1;
     
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
+    return glm::normalize(glm::cross(edge1, edge2));
 }
