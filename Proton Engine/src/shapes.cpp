@@ -388,8 +388,14 @@ void Slope::setupMesh() {
         return;
     }
     
+    if (!data) {
+    std::cerr << "Failed to load base texture: " << pathtotexture << std::endl;
+    return;
+}
     if(data) {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        GLenum format = (nr_channels == 4) ? GL_RGBA : GL_RGB;
+        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+
         glGenerateMipmap(GL_TEXTURE_2D);
     } else {
         std::cout << "Failed to load the texture\n";
@@ -397,7 +403,7 @@ void Slope::setupMesh() {
     
     glGenTextures(1, &diffuse_texture);
     glBindTexture(GL_TEXTURE_2D, diffuse_texture);
-
+    
     // wrapping and filtering
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -405,16 +411,20 @@ void Slope::setupMesh() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     
     if(data_diffuse) {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, d_width, d_height, 0, GL_RGB, GL_UNSIGNED_BYTE, data_diffuse);
+        GLenum format = (d_nr_channels == 4) ? GL_RGBA : GL_RGB;
+        glTexImage2D(GL_TEXTURE_2D, 0, format, d_width, d_height, 0, format, GL_UNSIGNED_BYTE, data_diffuse);
+
         glGenerateMipmap(GL_TEXTURE_2D);
     } else {
         std::cout << "Failed to load the texture\n";
     }
-    
     if (!data_diffuse) {
         std::cerr << "Failed to load base texture: " << diffuse_path << std::endl;
         diffuse_texture = texture;
     }
+
+    
+    
     
     stbi_image_free(data);
     stbi_image_free(data_diffuse);

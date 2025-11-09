@@ -71,6 +71,9 @@ void main()
     float ambient_strength = 0.4f;
     vec4 texColor = texture(texture1, TexCoord);
     
+    if (texColor.a < 0.1)
+            discard;
+    
     FragColor = texColor * vec4(vertexColor * (ambient_strength + diffuse + specular), 1.0);
 }
 
