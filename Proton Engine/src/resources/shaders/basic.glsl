@@ -51,13 +51,14 @@ in vec3 light_sources;
 in vec3 light_color;
 
 uniform sampler2D texture1;
+uniform sampler2D diffuseTexture;
+uniform sampler2D speccularTexture;
 
 vec3 norm = normalize(normal);
 vec3 lightDir = normalize(light_sources - FragPos);
 
-
 float diff = max(dot(norm, lightDir), 0.0);
-vec3 diffuse = diff * light_color;
+vec3 diffuse = diff * light_color * vec3(texture(diffuseTexture, TexCoord));
 
 vec3 viewDir = normalize(viewPos - FragPos);
 vec3 reflectDir = reflect(-lightDir, norm);

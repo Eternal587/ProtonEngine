@@ -20,6 +20,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <cmath>
+#include <OpenAL/OpenAL.h>
 
 /// Proton Engine Specific Headers
 #include "shapes.h"
@@ -287,6 +288,9 @@ int main()
     // shader_program_source source = parse_shader(filepath + "resources\\shaders\\basic.glsl");
     shader_program_source source = parse_shader(filepath + "/resources/shaders/basic.glsl"); // Mac Version
     unsigned int shader = create_shaders(source.vertex_source, source.fragment_source);
+    
+    
+    
     
     glUseProgram(shader);
     

@@ -10,6 +10,13 @@
 #include <vector>
 #include <string>
 
+struct Material {
+    glm::vec3 ambient;
+    glm::vec3 diffuse;
+    glm::vec3 specular;
+    float shinyness;
+};
+
 class Cube {
 public:
     unsigned int VAO, VBO, EBO;
@@ -17,7 +24,7 @@ public:
     glm::vec3 dimensions;
     glm::vec3 color;
     std::string pathtotexture;
-    unsigned int texture;
+    unsigned int texture, diffuse_texture;
     glm::vec3 tiles;
     float shinyness;
     float degree_x, degree_y, degree_z;
@@ -38,7 +45,7 @@ public:
     glm::vec3 dimensions;
     glm::vec3 color;
     std::string pathtotexture;
-    unsigned int texture;
+    unsigned int texture, diffuse_texture;
     glm::vec3 tiles;
     float shinyness;
     float degree_x, degree_y, degree_z;

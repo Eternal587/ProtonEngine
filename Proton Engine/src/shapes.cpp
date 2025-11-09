@@ -117,7 +117,12 @@ void Cube::setupMesh() {
     
     stbi_set_flip_vertically_on_load(true);
     int width, height, nr_channels;
+    int d_width, d_height, d_nr_channels;
     unsigned char *data = stbi_load(pathtotexture.c_str(), &width, &height, &nr_channels, 0);
+    
+    std::string diffuse_path = pathtotexture.substr(0, pathtotexture.find(".")) + "_diffuse" + (pathtotexture.substr(pathtotexture.find("."), pathtotexture.length() - 1));
+    
+    unsigned char *data_diffuse = stbi_load(diffuse_path.c_str(), &d_width, &d_height, &d_nr_channels, 0);
     
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
@@ -129,16 +134,46 @@ void Cube::setupMesh() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     
     /// glTexImage2D(Texture type, mipmap level, how we want OpenGL to store said textures, setting the width and height of the texture, (always 0: "legacy stuff"),  format, data type, imagedata)
+    if (!data) {
+    std::cerr << "Failed to load base texture: " << pathtotexture << std::endl;
+    return;
+}
     if(data) {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        GLenum format = (nr_channels == 4) ? GL_RGBA : GL_RGB;
+        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+
         glGenerateMipmap(GL_TEXTURE_2D);
     } else {
         std::cout << "Failed to load the texture\n";
     }
     
+    glGenTextures(1, &diffuse_texture);
+    glBindTexture(GL_TEXTURE_2D, diffuse_texture);
+    
+    // wrapping and filtering
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    
+    if(data_diffuse) {
+        GLenum format = (d_nr_channels == 4) ? GL_RGBA : GL_RGB;
+        glTexImage2D(GL_TEXTURE_2D, 0, format, d_width, d_height, 0, format, GL_UNSIGNED_BYTE, data_diffuse);
+
+        glGenerateMipmap(GL_TEXTURE_2D);
+    } else {
+        std::cout << "Failed to load the texture\n";
+    }
+    if (!data_diffuse) {
+        std::cerr << "Failed to load base texture: " << diffuse_path << std::endl;
+        diffuse_texture = texture;
+    }
+    
     stbi_image_free(data);
+    stbi_image_free(data_diffuse);
     
     recalculate_normals();
+    
 }
 
 void Cube::recalculate_normals() {
@@ -232,6 +267,10 @@ void Cube::Render(unsigned int shaderProgram) {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture);
         glUniform1i(glGetUniformLocation(shaderProgram, "texture1"), 0);
+    
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, diffuse_texture);
+        glUniform1i(glGetUniformLocation(shaderProgram, "diffuseTexture"), 1);
 
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
@@ -327,7 +366,12 @@ void Slope::setupMesh() {
     
     stbi_set_flip_vertically_on_load(true);
     int width, height, nr_channels;
+    int d_width, d_height, d_nr_channels;
     unsigned char *data = stbi_load(pathtotexture.c_str(), &width, &height, &nr_channels, 0);
+    
+    std::string diffuse_path = pathtotexture.substr(0, pathtotexture.find(".")) + "_diffuse" + (pathtotexture.substr(pathtotexture.find("."), pathtotexture.length() - 1));
+    
+    unsigned char *data_diffuse = stbi_load(diffuse_path.c_str(), &d_width, &d_height, &d_nr_channels, 0);
     
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
@@ -339,6 +383,11 @@ void Slope::setupMesh() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     
     /// glTexImage2D(Texture type, mipmap level, how we want OpenGL to store said textures, setting the width and height of the texture, (always 0: "legacy stuff"),  format, data type, imagedata)
+    if (!data) {
+        std::cerr << "Failed to load base texture: " << pathtotexture << std::endl;
+        return;
+    }
+    
     if(data) {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
@@ -346,8 +395,29 @@ void Slope::setupMesh() {
         std::cout << "Failed to load the texture\n";
     }
     
-    stbi_image_free(data);
+    glGenTextures(1, &diffuse_texture);
+    glBindTexture(GL_TEXTURE_2D, diffuse_texture);
+
+    // wrapping and filtering
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     
+    if(data_diffuse) {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, d_width, d_height, 0, GL_RGB, GL_UNSIGNED_BYTE, data_diffuse);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    } else {
+        std::cout << "Failed to load the texture\n";
+    }
+    
+    if (!data_diffuse) {
+        std::cerr << "Failed to load base texture: " << diffuse_path << std::endl;
+        diffuse_texture = texture;
+    }
+    
+    stbi_image_free(data);
+    stbi_image_free(data_diffuse);
 }
 
 void Slope::recalculate_normals() {
@@ -432,6 +502,10 @@ void Slope::Render(unsigned int shaderProgram) {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture);
         glUniform1i(glGetUniformLocation(shaderProgram, "texture1"), 0);
+    
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, diffuse_texture);
+        glUniform1i(glGetUniformLocation(shaderProgram, "diffuseTexture"), 1);
 
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 24, GL_UNSIGNED_INT, 0);
