@@ -24,10 +24,17 @@ void Renderer::RegisterSlope(Slope* slope) {
     std::cout << "Registered Slope\n";
 }
 
+/*void Renderer::RegisterMesh(Mesh* mesh) {
+    meshs.push_back(mesh);
+    std::cout << "Registered Mesh\n";
+}*/
+
 void Renderer::RenderAll(unsigned int shaderProgram) {
     for (Cube* cube : cubes)
         cube->Render(shaderProgram);
     for (Slope* slope : slopes)
         slope->Render(shaderProgram);
+    //for (Mesh* mesh : meshs)
+    //  mesh->Render(shaderProgram);
 }
 

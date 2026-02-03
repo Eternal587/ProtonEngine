@@ -14,6 +14,16 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
+std::vector<Hitbox> hitboxes;
+
+void RegisterHitbox(Hitbox hitbox) {
+    hitboxes.push_back(hitbox);
+    std::cout << "Registered Hitbox\n";
+}
+
+std::vector<Hitbox> returnHitboxes() {
+    return hitboxes;
+}
 
 Cube::Cube(std::string cube_name, const glm::vec3& pos, const glm::vec3& dim, const glm::vec3& col, const std::string& path, glm::vec3 mipmap, const float shine, const float rotation_x, const float rotation_y, const float rotation_z)
 : position(pos), dimensions(dim), color(col), pathtotexture(path), tiles(mipmap), shinyness(shine), name(cube_name), degree_x(rotation_x), degree_y(rotation_y), degree_z(rotation_z)
@@ -23,6 +33,9 @@ Cube::Cube(std::string cube_name, const glm::vec3& pos, const glm::vec3& dim, co
 }
 
 void Cube::setupMesh() {
+    last_pos = position;
+    last_dir = glm::vec3(degree_x, degree_y, degree_z);
+    
     float w = dimensions.x;
     float h = dimensions.y;
     float d = dimensions.z;
@@ -31,6 +44,24 @@ void Cube::setupMesh() {
     float ty = tiles.y;
     float tz = tiles.z;
     
+    hitbox.position = position;
+    hitbox.dimensions = dimensions;
+    hitbox.dir = glm::vec3(degree_x, degree_y, degree_z);
+    
+    glm::mat4 rot =
+    glm::rotate(glm::mat4(1.0f), glm::radians(hitbox.dir.x), glm::vec3(1,0,0))
+  * glm::rotate(glm::mat4(1.0f), glm::radians(hitbox.dir.y), glm::vec3(0,1,0))
+  * glm::rotate(glm::mat4(1.0f), glm::radians(hitbox.dir.z), glm::vec3(0,0,1));
+    
+    hitbox.axes[0] = glm::normalize(glm::vec3(rot * glm::vec4(1,0,0,0)));
+    hitbox.axes[1] = glm::normalize(glm::vec3(rot * glm::vec4(0,1,0,0)));
+    hitbox.axes[2] = glm::normalize(glm::vec3(rot * glm::vec4(0,0,1,0)));
+    
+    hitbox.half_extents = dimensions * 0.5f;
+    
+    /// hitbox.position = position - glm::vec3(hitbox.half_extents.x, hitbox.half_extents.y, hitbox.half_extents.z);
+    
+    RegisterHitbox(hitbox);
 
     float verts[] = {
         
@@ -181,6 +212,10 @@ void Cube::recalculate_normals() {
     float h = dimensions.y;
     float d = dimensions.z;
     
+    hitbox.position = position;
+    hitbox.dimensions = dimensions;
+    hitbox.dir = glm::vec3(degree_x, degree_y, degree_z);
+    
     float tx = tiles.x;
     float ty = tiles.y;
     float tz = tiles.z;
@@ -202,6 +237,15 @@ void Cube::recalculate_normals() {
     glm::mat3 normal_matrix_x = glm::mat3(rotate_matrix_x);
     glm::mat3 normal_matrix_y = glm::mat3(rotate_matrix_y);
     glm::mat3 normal_matrix_z = glm::mat3(rotate_matrix_z);
+    
+    glm::mat4 rot =
+    glm::rotate(glm::mat4(1.0f), glm::radians(hitbox.dir.x), glm::vec3(1,0,0))
+  * glm::rotate(glm::mat4(1.0f), glm::radians(hitbox.dir.y), glm::vec3(0,1,0))
+  * glm::rotate(glm::mat4(1.0f), glm::radians(hitbox.dir.z), glm::vec3(0,0,1));
+    
+    hitbox.axes[0] = glm::normalize(glm::vec3(rot * glm::vec4(1,0,0,0)));
+    hitbox.axes[1] = glm::normalize(glm::vec3(rot * glm::vec4(0,1,0,0)));
+    hitbox.axes[2] = glm::normalize(glm::vec3(rot * glm::vec4(0,0,1,0)));
     
     for(int i=0; i < 6; i++) {
         glm::vec4 temp_vector = rotate_matrix_x * rotate_matrix_y * rotate_matrix_z * glm::vec4(normals[i], 1.0f);
@@ -258,7 +302,13 @@ void Cube::Render(unsigned int shaderProgram) {
         model = glm::rotate(model, glm::radians(degree_x), glm::vec3(1.0f, 0.0f, 0.0f));
         model = glm::rotate(model, glm::radians(degree_y), glm::vec3(0.0f, 1.0f, 0.0f));
         model = glm::rotate(model, glm::radians(degree_z), glm::vec3(0.0f, 0.0f, 1.0f));
+    
+        if(position != last_pos || glm::vec3(degree_x, degree_y, degree_z) != last_dir) {
         recalculate_normals();
+        }
+        
+        last_pos = position;
+        last_dir = glm::vec3(degree_x, degree_y, degree_z);
     
     
         unsigned int modelLoc = glGetUniformLocation(shaderProgram, "model");
@@ -292,6 +342,12 @@ void Slope::setupMesh() {
     float ty = tiles.y;
     float tz = tiles.z;
     
+    last_pos = position;
+    last_dir = glm::vec3(degree_x, degree_y, degree_z);
+    
+    hitbox.position = position;
+    hitbox.dimensions = dimensions;
+    hitbox.dir = glm::vec3(degree_x, degree_y, degree_z);
 
     float verts[] = {
         // Bottom face (y = 0)
@@ -439,6 +495,10 @@ void Slope::recalculate_normals() {
     float ty = tiles.y;
     float tz = tiles.z;
     
+    hitbox.position = position;
+    hitbox.dimensions = dimensions;
+    hitbox.dir = glm::vec3(degree_x, degree_y, degree_z);
+    
     glm::vec3 normals[6] {{0.0f, -1.0f, 0.0f}, {0.0f, 0.0f, -1.0f}, {0.0f, 0.707f, 0.707f}, {-1.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f}};
     
     glm::vec3 rotate_x = glm::vec3(1.0f, 0.0f, 0.0f);
@@ -503,7 +563,13 @@ void Slope::Render(unsigned int shaderProgram) {
         model = glm::rotate(model, glm::radians(degree_x), glm::vec3(1.0f, 0.0f, 0.0f));
         model = glm::rotate(model, glm::radians(degree_y), glm::vec3(0.0f, 1.0f, 0.0f));
         model = glm::rotate(model, glm::radians(degree_z), glm::vec3(0.0f, 0.0f, 1.0f));
+        
+        if(position != last_pos || glm::vec3(degree_x, degree_y, degree_z) != last_dir) {
         recalculate_normals();
+        }
+        
+        last_pos = position;
+        last_dir = glm::vec3(degree_x, degree_y, degree_z);
     
     
         unsigned int modelLoc = glGetUniformLocation(shaderProgram, "model");
@@ -528,3 +594,13 @@ glm::vec3 get_normal(glm::vec3 pos1, glm::vec3 pos2, glm::vec3 pos3) {
     
     return glm::normalize(glm::cross(edge1, edge2));
 }
+
+
+/* Mesh::Mesh(std::string meshName, const glm::vec3 pos, std::vector<glm::vec3> vertices, glm::vec3 col, std::string texpath, glm::vec3 mipmap, float shine, float rotation_x, float rotation_y, float rotation_z)
+: name(meshName), position(pos), points(vertices), color(col), pathtotexture(texpath), tiles(mipmap), shinyness(shine), degree_x(rotation_x), degree_y(rotation_y), degree_z(rotation_z)
+{
+    SetupMesh();
+    Renderer::RegisterMesh(this);
+}*/
+
+

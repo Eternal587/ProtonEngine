@@ -10,15 +10,14 @@
 #include <vector>
 #include <string>
 
-struct Material {
-    glm::vec3 ambient;
-    glm::vec3 diffuse;
-    glm::vec3 specular;
-    float shinyness;
+struct Hitbox {
+    glm::vec3 position, dimensions, dir, axes[3], half_extents;
 };
 
 class Cube {
 public:
+    glm::vec3 last_pos;
+    glm::vec3 last_dir;
     unsigned int VAO, VBO, EBO;
     glm::vec3 position;
     glm::vec3 dimensions;
@@ -29,6 +28,7 @@ public:
     float shinyness;
     float degree_x, degree_y, degree_z;
     std::string name;
+    Hitbox hitbox;
 
     Cube(std::string cube_name, const glm::vec3& pos, const glm::vec3& dim, const glm::vec3& col, const std::string& path, glm::vec3 mipmap, float shine, float rotation_x, float rotation_y, float rotation_z);
     void Render(unsigned int shaderProgram);
@@ -40,6 +40,8 @@ private:
 
 class Slope {
 public:
+    glm::vec3 last_pos;
+    glm::vec3 last_dir;
     unsigned int VAO, VBO, EBO;
     glm::vec3 position;
     glm::vec3 dimensions;
@@ -50,6 +52,7 @@ public:
     float shinyness;
     float degree_x, degree_y, degree_z;
     std::string name;
+    Hitbox hitbox;
 
     Slope(std::string slope_name, const glm::vec3& pos, const glm::vec3& dim, const glm::vec3& col, const std::string& path, glm::vec3 mipmap, float shine, float rotation_x, float rotation_y, float rotation_z);
     void Render(unsigned int shaderProgram);
@@ -66,4 +69,34 @@ struct LightSource {
     LightSource(const glm::vec3& pos, const glm::vec3& col);
 };
 
+class Skybox {
+    std::string pathtotexture;
+    Skybox(std::string texture_path);
+};
+
 glm::vec3 get_normal(glm::vec3 pos1, glm::vec3 pos2, glm::vec3 pos3);
+
+void RegisterHitbox(Hitbox hitbox);
+
+std::vector<Hitbox> returnHitboxes();
+/*
+class Mesh {
+    public:
+        glm::vec3 position;
+        std::vector<glm::vec3> points;
+        glm::vec3 color;
+        std::string pathtotexture;
+        unsigned int texture, diffuse_texture;
+        glm::vec3 tiles;
+        float shinyness;
+        float degree_x, degree_y, degree_z;
+        std::string name;
+        
+        Mesh(std::string meshName, const glm::vec3 pos, std::vector<glm::vec3> vertices, glm::vec3 col, std::string texpath, glm::vec3 mipmap, float shine, float rotation_x, float rotation_y, float rotation_z);
+        void Render(unsigned int shaderProgram);
+    
+    private:
+    void SetupMesh();
+    void calculateNormals();
+};
+*/
