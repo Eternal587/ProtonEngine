@@ -13,11 +13,12 @@ TYPE OF OBJECT:
  Used to Clarify how to render the object, EX: if its a cube use hardcoded indices and normals because its a cube,
  TYPES:
    Cube
-   Slope (Planned)
+   Slope
    Pyramid (Planned)
    Sphere (Planned)
    2d Plane (Planned)
    3d Model (Planned)
+   Object - Mutiple Objects in one special file called a .pobj (contains the info for every object and they are all linked together.)
 POSITION:
   A Vec3 that contains the x, y, and z cordinates of the object
 DIMENSIONS:
