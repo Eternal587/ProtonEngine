@@ -37,6 +37,30 @@ SCRIPT (Planned)
   NOTE: You can specify 'NONE' to just have a static Object
 ```
 
+EXAMPLE
+
+```
+"NAME": "cube1",
+    "TYPE_OF_OBJECT": "CUBE",
+    "X": 0.0,
+    "Y": 0.0,
+    "Z": 0.0,
+    "W": 1.0,
+    "H": 1.0,
+    "D": 1.0,
+    "R": 1.0,
+    "G": 1.0,
+    "B": 1.0,
+    "PATH_TO_TEXTURE": "cat.jpg",
+    "MIPMAP_LEVELX": 1.0,
+    "MIPMAP_LEVELY": 1.0,
+    "MIPMAP_LEVELZ": 1.0,
+    "SHINYNESS": 0.1,
+    "ROTATION_X": 0.0,
+    "ROTATION_Y": 0.0,
+    "ROTATION_Z": 0.0
+```
+
 # .pobj FILES - PROTON ENGINE OBJECTS
 
 A Proton Engine Object file (or a .pobj file) Is used for storing the data of multiple objects that you want fused together
@@ -58,6 +82,7 @@ EXAMPLE OF A .pboj FILE
 ```
 "NAME": "ProtonObject",
 "TYPE_OF_OBJECT": "OBJ",
+"OBJECT_SOURCE": "Object1.pobj"
 "X": 0.0,
 "Y": 0.0,
 "Z": 0.0,
