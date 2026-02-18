@@ -52,3 +52,17 @@ EXAMPLE OF A .pboj FILE
 }
 ```
 
+## Proton Engine Object Attributes
+
+
+```
+"NAME": "ProtonObject",
+"TYPE_OF_OBJECT": "OBJ",
+"X": 0.0,
+"Y": 0.0,
+"Z": 0.0,
+"ROTATION_X": 0.0,
+"ROTATION_Y": 0.0,
+"ROTATION_Z": 0.0
+```
+
