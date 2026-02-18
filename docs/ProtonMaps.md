@@ -1,6 +1,6 @@
 # PROTON ENGINE MAP LOADING
 
-NOTE: NONE OF THIS IS MADE YET THIS IS MAINLY A PLANNING DOCUMENT
+NOTE: THIS IS CURRENT A IN PROGRESS PROJECT AND SOMETHING IN THIS DOCUMENT ARE PURELY FOR PLANNING
 
 ProtonMaps or pmap files are used to store data for maps
 It includes the full data needed to render the object and scripts linked to the object (if you choose to do so)
