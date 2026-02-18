@@ -32,8 +32,23 @@ MIPMAP_LEVEL
   How many times th texture repeats on the object
 SHINYNESS
   Tells the shader how much specullar strength to apply to the object
-SCRIPT
+SCRIPT (Planned)
   the path to the script used for movement, npcs, ect
   NOTE: You can specify 'NONE' to just have a static Object
+```
+
+# .pobj FILES - PROTON ENGINE OBJECTS
+
+A Proton Engine Object file (or a .pobj file) Is used for storing the data of multiple objects that you want fused together
+EXAMPLE OF A .pboj FILE
+```
+{
+  NAME: Object1
+  Objects: {
+  [ObjectInfo]
+  [ObjectInfo]
+  [ObjectInfo]
+  }
+}
 ```
 
