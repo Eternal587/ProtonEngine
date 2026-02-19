@@ -7,13 +7,13 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
-out vec3 vertexColor;
 out vec2 TexCoord;
+out vec3 FragPos;
 
 void main() {
     gl_Position = projection * view * model * vec4(aPos, 1.0);
-    vertexColor = vec3(1.0, 1.0, 1.0);
     TexCoord = aTexCoord;
+    FragPos = vec3(model * vec4(aPos, 1.0));
 }
 
 
@@ -21,17 +21,15 @@ void main() {
 #version 330 core
 out vec4 FragColor;
 
-in vec3 vertexColor;
 in vec2 TexCoord;
 in vec3 FragPos;
 
 uniform sampler2D texture1;
 
 void main() {
+    vec4 texColor = texture(texture1, TexCoord);
     if (texColor.a < 0.1)
             discard;
-    
-    vec4 texColor = texture(texture1, TexCoord);
 
-    FragColor = vec4(texColor, 1.0);
+    FragColor = texColor;
 }
