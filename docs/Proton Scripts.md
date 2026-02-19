@@ -1,5 +1,5 @@
 ### PROTON SCRIPT FILES
-> This Document Is Currently Just a planning document and Nothing has been added yet - 2/19/26
+> This Document Is Currently a planning document and is in progress - 2/19/26 09:45
 
 Proton Scripts will be used for Objects Moving them and doing other things with them such as using them as light sources, sound sources, Aplpying VFX, ect
 As well as being able to use them as interactive blocks
