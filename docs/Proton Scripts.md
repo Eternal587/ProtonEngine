@@ -23,11 +23,11 @@ InitRendering(); // Loads the Rendering Script and Begins Rendering Everything
 Object Object1 = Map.GetObject("CUBE1");
 
 // Movement
-Move(Object1, 0, 0, 10) // Move(OBJECT, XDISTANCE, YDISTANCE, ZDISTANCE);
-Shift(Object1, 0, 0, 10, 1000) // Shift(OBJECT, XDISTANCE, YDISTANCE, ZDISTANCE, MILLISECONDS);
+Move(Object1, 0.0f, 0.0f, 10.0f); // Move(OBJECT, XDISTANCE, YDISTANCE, ZDISTANCE);
+Shift(Object1, 0.0f, 0.0f, 10.0f, 1000.0f); // Shift(OBJECT, XDISTANCE, YDISTANCE, ZDISTANCE, MILLISECONDS);
 
-Rotate(Object1, 0, 180, 0) // Rotate(OBJECT, XROTATION, YROTATION, ZROTATION);
-Turn(Object1, 0, 270, 0, 500) // Turn(OBJECT, XROTATION, YROTATION, ZROTATION, MILLISECONDS);
+Rotate(Object1, 0.0f, 180.0f, 0.0f); // Rotate(OBJECT, XROTATION, YROTATION, ZROTATION);
+Turn(Object1, 0.0f, 270.0f, 0.0f, 500.0f); // Turn(OBJECT, XROTATION, YROTATION, ZROTATION, MILLISECONDS);
 
 // Hitbox Manipulation
 
@@ -80,6 +80,7 @@ UnloadMap(); // Unloads all currently existing objects
 
 Now Lets go over all the Synatx Planned (2/19/26)
 
+```
 ParseMap(MAPSOURCE)
 String MAPSOURCE -> the location inside of the maps folder
 Loads A Map and It Objects
@@ -91,5 +92,7 @@ Map.GetObject(OBJECTNAME)
 String OBJECTNAME -> The Name you assigned to the Object in the .pmap file
 Calls a Objcet from within the currently Loaded Map
 
+
+```
 
 
