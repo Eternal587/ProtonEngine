@@ -4,7 +4,7 @@
 Proton Scripts will be used for Objects Moving them and doing other things with them such as using them as light sources, sound sources, Aplpying VFX, ect
 As well as being able to use them as interactive blocks
 
-Proton Scripts still act as
+Proton Scripts still act as C++ Code just with the help of the Proton Engine Libraries for Audio, 3d Graphics, Ect
 
 **SYNTAX EXAMPLES**
 ```
