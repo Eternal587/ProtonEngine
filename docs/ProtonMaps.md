@@ -32,9 +32,6 @@ MIPMAP_LEVEL
   How many times th texture repeats on the object
 SHINYNESS
   Tells the shader how much specullar strength to apply to the object
-SCRIPT (Planned)
-  the path to the script used for movement, npcs, ect
-  NOTE: You can specify 'NONE' to just have a static Object
 ```
 
 EXAMPLE
