@@ -95,7 +95,7 @@ public:
     Collision(bool coll, bool topp) : col(coll), top(topp){}
 };
 
-Collision HitboxIntersect(Hitbox hitbox1, Hitbox hitbox2) {
+Collision HitboxIntersect(Hitbox hitbox1, Hitbox hitbox2) { // HitboxIntersect(HITBOX1, HITBOX2) -> Tests if 2 Hitboxes are colliding
 
     glm::vec3 hitboxPoints[] = {
         hitbox1.position,
@@ -143,7 +143,7 @@ Collision HitboxIntersect(Hitbox hitbox1, Hitbox hitbox2) {
 
 /// Mac Os Version
 
-std::string getExecutablePath() {
+std::string getExecutablePath() { /// Returns the Exectuable Path
     char pathBuffer[1024];
     uint32_t size = sizeof(pathBuffer);
     if (_NSGetExecutablePath(pathBuffer, &size) != 0) {
@@ -452,7 +452,9 @@ int main()
     
     float previous_time = 0.0f;
     int framecount = 0;
-    
+
+
+    /// ImGui Setup
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
@@ -587,6 +589,77 @@ int main()
             ImGui::Begin("FPS");
             ImGui::Text(std::to_string(io.Framerate).c_str());
             ImGui::Text(std::to_string(player.yvelocity).c_str());
+            ImGui::End();
+
+            ImGui::Begin("DEBUG MENU");
+            if(ImGui::BeginTabBar("Debug")) {
+                if(ImGui::BeginTabItem("Object Manager")) {
+                    
+                    if(ImGui::BeginTabBar("Objects")) {
+                        
+                        if(ImGui::BeginTabItem("Cubes")) {
+                            for(int i = 0; i < cubes.size(); i++) {
+                                if(ImGui::CollapsingHeader(cubes[i].name)) {
+                                    ImGui::Text("Position:");
+
+                                    // X Corrdinate
+                                    
+                                    ImGui::Text(std::to_string(cubes[i].position.x));
+                                    
+                                    ImGui::SameLine();
+                                    
+                                    if(ImGui::Button("-")){
+                                        cubes[i].position.x = cubes[i].position.x - 0.1;
+                                    }
+
+                                    ImGui::SameLine();
+
+                                    if(ImGui::Button("+")){
+                                        cubes[i].position.x = cubes[i].position.x + 0.1;
+                                    }
+
+                                    // Y Corrdinate
+
+                                    ImGui::Text(std::to_string(cubes[i].position.y));
+                                    
+                                    ImGui::SameLine();
+                                    
+                                    if(ImGui::Button("-")){
+                                        cubes[i].position.y = cubes[i].position.y - 0.1;
+                                    }
+
+                                    ImGui::SameLine();
+
+                                    if(ImGui::Button("+")){
+                                        cubes[i].position.y = cubes[i].position.y + 0.1;
+                                    }
+
+                                    // Z Corrdinate
+
+                                    ImGui::Text(std::to_string(cubes[i].position.z));
+                                    
+                                    ImGui::SameLine();
+                                    
+                                    if(ImGui::Button("-")){
+                                        cubes[i].position.z = cubes[i].position.z - 0.1;
+                                    }
+
+                                    ImGui::SameLine();
+
+                                    if(ImGui::Button("+")){
+                                        cubes[i].position.z = cubes[i].position.z + 0.1;
+                                    }
+                                }
+                            }
+                        }
+                        
+                    ImGui::EndTabBar();
+                    }
+                    
+                ImGui::EndTabItem();
+                }
+                ImGui::EndTabBar();
+            }
             ImGui::End();
             
             ImGui::Render();
