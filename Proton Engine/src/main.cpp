@@ -649,6 +649,34 @@ int main()
                                     if(ImGui::Button("+")){
                                         cubes[i].position.z = cubes[i].position.z + 0.1;
                                     }
+
+                                    ImGui::Text("Rotations");
+
+                                    // X Axis
+
+                                    ImGui::Text(std::to_string(cubes[i].degree_x));
+
+                                    ImGui::SameLine();
+
+                                    ImGui::SliderFloat("X Axis", &cubes[i].degree_x, 0.0f, 360.0f);
+
+                                    // Y Axis
+
+                                    ImGui::Text(std::to_string(cubes[i].degree_y));
+
+                                    ImGui::SameLine();
+
+                                    ImGui::SliderFloat("Y Axis", &cubes[i].degree_y, 0.0f, 360.0f);
+
+                                    // Z Axis
+
+                                    ImGui::Text(std::to_string(cubes[i].degree_z));
+
+                                    ImGui::SameLine();
+
+                                    ImGui::SliderFloat("Z Axis", &cubes[i].degree_z, 0.0f, 360.0f);
+
+                                    
                                 }
                             }
                         }
