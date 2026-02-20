@@ -57,6 +57,9 @@ void parse_map(std::string map) {
     std::vector<Object> objects;
 
     for (auto& item : data) {
+        if (item["TYPE_OF_OBJECT"] == "OBJ") {
+            std::string subPath = getExePath() + "/resources/objects/" + (item["OBJECT_SOURCE"].dump() + ".pobj");
+        }
         Object obj;
         obj.NAME = item["NAME"];
         obj.TYPE_OF_OBJECT = item["TYPE_OF_OBJECT"];

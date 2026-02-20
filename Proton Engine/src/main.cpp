@@ -96,7 +96,7 @@ public:
 };
 
 Collision HitboxIntersect(Hitbox hitbox1, Hitbox hitbox2) {
-    
+
     glm::vec3 hitboxPoints[] = {
         hitbox1.position,
         hitbox1.position + glm::vec3(hitbox1.dimensions.x, 0, 0),
@@ -460,6 +460,8 @@ int main()
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 330");
     
+    
+    
     bool touching = false;
     
     float deltaTime = 0.0f; // Time between current frame and last frame
@@ -475,6 +477,7 @@ int main()
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
         
+        ImGui::ShowStyleEditor();
         
         // Update camera front vector from yaw & pitch (recompute each frame)
         glm::vec3 front;
