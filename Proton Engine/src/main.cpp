@@ -600,134 +600,145 @@ int main()
                         if(ImGui::BeginTabItem("Cubes")) {
                             for(int i = 0; i < cubes.size(); i++) {
                                 if(ImGui::CollapsingHeader(cubes[i].name)) {
-                                    ImGui::Text("Position:");
+                                    // Positions
+                                    If(ImGui::BeginTabBar("Attributes")) {
+                                        if(ImGui::BeginTabItem("Position")) {
+                                            // X Corrdinate
+                                            
+                                            ImGui::Text(std::to_string(cubes[i].position.x));
+                                            
+                                            ImGui::SameLine();
+                                            
+                                            if(ImGui::Button("-")){
+                                                cubes[i].position.x = cubes[i].position.x - 0.1;
+                                            }
+        
+                                            ImGui::SameLine();
+        
+                                            if(ImGui::Button("+")){
+                                                cubes[i].position.x = cubes[i].position.x + 0.1;
+                                            }
+        
+                                            // Y Corrdinate
+        
+                                            ImGui::Text(std::to_string(cubes[i].position.y));
+                                            
+                                            ImGui::SameLine();
+                                            
+                                            if(ImGui::Button("-")){
+                                                cubes[i].position.y = cubes[i].position.y - 0.1;
+                                            }
+        
+                                            ImGui::SameLine();
+        
+                                            if(ImGui::Button("+")){
+                                                cubes[i].position.y = cubes[i].position.y + 0.1;
+                                            }
+        
+                                            // Z Corrdinate
+        
+                                            ImGui::Text(std::to_string(cubes[i].position.z));
+                                            
+                                            ImGui::SameLine();
+                                            
+                                            if(ImGui::Button("-")){
+                                                cubes[i].position.z = cubes[i].position.z - 0.1;
+                                            }
+        
+                                            ImGui::SameLine();
+        
+                                            if(ImGui::Button("+")){
+                                                cubes[i].position.z = cubes[i].position.z + 0.1;
+                                            }
 
-                                    // X Corrdinate
-                                    
-                                    ImGui::Text(std::to_string(cubes[i].position.x));
-                                    
-                                    ImGui::SameLine();
-                                    
-                                    if(ImGui::Button("-")){
-                                        cubes[i].position.x = cubes[i].position.x - 0.1;
+                                            ImGui::EndTabItem();
+                                        }
+    
+                                        // Dimensions
+                                        if(ImGui::BeginTabItem("Dimensions")) {
+        
+                                            // X Dimension
+                                            
+                                            ImGui::Text(std::to_string(cubes[i].dimensions.x));
+                                            
+                                            ImGui::SameLine();
+                                            
+                                            if(ImGui::Button("-")){
+                                                cubes[i].dimensions.x = cubes[i].dimensions.x - 0.1;
+                                            }
+        
+                                            ImGui::SameLine();
+        
+                                            if(ImGui::Button("+")){
+                                                cubes[i].dimensions.x = cubes[i].dimensions.x + 0.1;
+                                            }
+        
+                                            // Y Dimension
+        
+                                            ImGui::Text(std::to_string(cubes[i].dimensions.y));
+                                            
+                                            ImGui::SameLine();
+                                            
+                                            if(ImGui::Button("-")){
+                                                cubes[i].dimensions.y = cubes[i].dimensions.y - 0.1;
+                                            }
+        
+                                            ImGui::SameLine();
+        
+                                            if(ImGui::Button("+")){
+                                                cubes[i].dimensions.y = cubes[i].dimensions.y + 0.1;
+                                            }
+        
+                                            // Z Dimensions
+        
+                                            ImGui::Text(std::to_string(cubes[i].dimensions.z));
+                                            
+                                            ImGui::SameLine();
+                                            
+                                            if(ImGui::Button("-")){
+                                                cubes[i].dimensions.z = cubes[i].dimensions.z - 0.1;
+                                            }
+        
+                                            ImGui::SameLine();
+        
+                                            if(ImGui::Button("+")){
+                                                cubes[i].dimensions.z = cubes[i].dimensions.z + 0.1;
+                                            }
+
+                                            ImGui::EndTabItem();
+                                        }
+    
+                                        // Rotations
+                                        if(ImGui::BeginTabItem("Rotations")) {
+    
+                                            // X Axis
+        
+                                            ImGui::Text(std::to_string(cubes[i].degree_x));
+        
+                                            ImGui::SameLine();
+        
+                                            ImGui::SliderFloat("X Axis", &cubes[i].degree_x, 0.0f, 360.0f);
+        
+                                            // Y Axis
+        
+                                            ImGui::Text(std::to_string(cubes[i].degree_y));
+        
+                                            ImGui::SameLine();
+        
+                                            ImGui::SliderFloat("Y Axis", &cubes[i].degree_y, 0.0f, 360.0f);
+        
+                                            // Z Axis
+        
+                                            ImGui::Text(std::to_string(cubes[i].degree_z));
+        
+                                            ImGui::SameLine();
+        
+                                            ImGui::SliderFloat("Z Axis", &cubes[i].degree_z, 0.0f, 360.0f);
+
+                                            ImGui::EndTabItem();
+                                        }
                                     }
-
-                                    ImGui::SameLine();
-
-                                    if(ImGui::Button("+")){
-                                        cubes[i].position.x = cubes[i].position.x + 0.1;
-                                    }
-
-                                    // Y Corrdinate
-
-                                    ImGui::Text(std::to_string(cubes[i].position.y));
-                                    
-                                    ImGui::SameLine();
-                                    
-                                    if(ImGui::Button("-")){
-                                        cubes[i].position.y = cubes[i].position.y - 0.1;
-                                    }
-
-                                    ImGui::SameLine();
-
-                                    if(ImGui::Button("+")){
-                                        cubes[i].position.y = cubes[i].position.y + 0.1;
-                                    }
-
-                                    // Z Corrdinate
-
-                                    ImGui::Text(std::to_string(cubes[i].position.z));
-                                    
-                                    ImGui::SameLine();
-                                    
-                                    if(ImGui::Button("-")){
-                                        cubes[i].position.z = cubes[i].position.z - 0.1;
-                                    }
-
-                                    ImGui::SameLine();
-
-                                    if(ImGui::Button("+")){
-                                        cubes[i].position.z = cubes[i].position.z + 0.1;
-                                    }
-
-                                    ImGui::Text("Rotations");
-
-                                    // X Axis
-
-                                    ImGui::Text(std::to_string(cubes[i].degree_x));
-
-                                    ImGui::SameLine();
-
-                                    ImGui::SliderFloat("X Axis", &cubes[i].degree_x, 0.0f, 360.0f);
-
-                                    // Y Axis
-
-                                    ImGui::Text(std::to_string(cubes[i].degree_y));
-
-                                    ImGui::SameLine();
-
-                                    ImGui::SliderFloat("Y Axis", &cubes[i].degree_y, 0.0f, 360.0f);
-
-                                    // Z Axis
-
-                                    ImGui::Text(std::to_string(cubes[i].degree_z));
-
-                                    ImGui::SameLine();
-
-                                    ImGui::SliderFloat("Z Axis", &cubes[i].degree_z, 0.0f, 360.0f);
-
-                                    // Dimensions
-
-                                    ImGui::Text("Dimensions:");
-
-                                    // X Dimension
-                                    
-                                    ImGui::Text(std::to_string(cubes[i].dimensions.x));
-                                    
-                                    ImGui::SameLine();
-                                    
-                                    if(ImGui::Button("-")){
-                                        cubes[i].dimensions.x = cubes[i].dimensions.x - 0.1;
-                                    }
-
-                                    ImGui::SameLine();
-
-                                    if(ImGui::Button("+")){
-                                        cubes[i].dimensions.x = cubes[i].dimensions.x + 0.1;
-                                    }
-
-                                    // Y Dimension
-
-                                    ImGui::Text(std::to_string(cubes[i].dimensions.y));
-                                    
-                                    ImGui::SameLine();
-                                    
-                                    if(ImGui::Button("-")){
-                                        cubes[i].dimensions.y = cubes[i].dimensions.y - 0.1;
-                                    }
-
-                                    ImGui::SameLine();
-
-                                    if(ImGui::Button("+")){
-                                        cubes[i].dimensions.y = cubes[i].dimensions.y + 0.1;
-                                    }
-
-                                    // Z Dimensions
-
-                                    ImGui::Text(std::to_string(cubes[i].dimensions.z));
-                                    
-                                    ImGui::SameLine();
-                                    
-                                    if(ImGui::Button("-")){
-                                        cubes[i].dimensions.z = cubes[i].dimensions.z - 0.1;
-                                    }
-
-                                    ImGui::SameLine();
-
-                                    if(ImGui::Button("+")){
-                                        cubes[i].dimensions.z = cubes[i].dimensions.z + 0.1;
-                                    }
-                                    
+                
                                 }
                             }
                         }
