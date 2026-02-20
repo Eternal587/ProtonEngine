@@ -585,7 +585,7 @@ int main()
             glUseProgram(shader);
             Renderer::RenderAll(shader);
             
-            // ImGui
+            // ImGui Menus
             ImGui::Begin("FPS");
             ImGui::Text(std::to_string(io.Framerate).c_str());
             ImGui::Text(std::to_string(player.yvelocity).c_str());
@@ -676,6 +676,57 @@ int main()
 
                                     ImGui::SliderFloat("Z Axis", &cubes[i].degree_z, 0.0f, 360.0f);
 
+                                    // Dimensions
+
+                                    ImGui::Text("Dimensions:");
+
+                                    // X Dimension
+                                    
+                                    ImGui::Text(std::to_string(cubes[i].dimensions.x));
+                                    
+                                    ImGui::SameLine();
+                                    
+                                    if(ImGui::Button("-")){
+                                        cubes[i].dimensions.x = cubes[i].dimensions.x - 0.1;
+                                    }
+
+                                    ImGui::SameLine();
+
+                                    if(ImGui::Button("+")){
+                                        cubes[i].dimensions.x = cubes[i].dimensions.x + 0.1;
+                                    }
+
+                                    // Y Dimension
+
+                                    ImGui::Text(std::to_string(cubes[i].dimensions.y));
+                                    
+                                    ImGui::SameLine();
+                                    
+                                    if(ImGui::Button("-")){
+                                        cubes[i].dimensions.y = cubes[i].dimensions.y - 0.1;
+                                    }
+
+                                    ImGui::SameLine();
+
+                                    if(ImGui::Button("+")){
+                                        cubes[i].dimensions.y = cubes[i].dimensions.y + 0.1;
+                                    }
+
+                                    // Z Dimensions
+
+                                    ImGui::Text(std::to_string(cubes[i].dimensions.z));
+                                    
+                                    ImGui::SameLine();
+                                    
+                                    if(ImGui::Button("-")){
+                                        cubes[i].dimensions.z = cubes[i].dimensions.z - 0.1;
+                                    }
+
+                                    ImGui::SameLine();
+
+                                    if(ImGui::Button("+")){
+                                        cubes[i].dimensions.z = cubes[i].dimensions.z + 0.1;
+                                    }
                                     
                                 }
                             }
