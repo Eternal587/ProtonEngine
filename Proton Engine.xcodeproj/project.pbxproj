@@ -36,9 +36,22 @@
 		3925D22E2E93040000786FE4 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+		39D254E72F4934BC009A4537 /* Exceptions for "Proton Engine" folder in "Compile Sources" phase from "Proton Engine" target */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = 3925D1CC2E92A40F00786FE4 /* Sources */;
+			membershipExceptions = (
+				src/Audio.h,
+			);
+		};
+/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		3925D1D22E92A40F00786FE4 /* Proton Engine */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				39D254E72F4934BC009A4537 /* Exceptions for "Proton Engine" folder in "Compile Sources" phase from "Proton Engine" target */,
+			);
 			path = "Proton Engine";
 			sourceTree = "<group>";
 		};

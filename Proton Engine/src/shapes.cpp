@@ -25,6 +25,12 @@ std::vector<Hitbox> returnHitboxes() {
     return hitboxes;
 }
 
+void RenderHitboxes() {
+    for(int i = 0; i < hitboxes.size(); i++) {
+        
+    }
+}
+
 Cube::Cube(std::string cube_name, const glm::vec3& pos, const glm::vec3& dim, const glm::vec3& col, const std::string& path, glm::vec3 mipmap, const float shine, const float rotation_x, const float rotation_y, const float rotation_z)
 : position(pos), dimensions(dim), color(col), pathtotexture(path), tiles(mipmap), shinyness(shine), name(cube_name), degree_x(rotation_x), degree_y(rotation_y), degree_z(rotation_z)
 {

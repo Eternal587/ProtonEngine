@@ -38,3 +38,7 @@ void Renderer::RenderAll(unsigned int shaderProgram) {
     //  mesh->Render(shaderProgram);
 }
 
+std::vector<Cube*> Renderer::returnCubes() {
+    return Renderer::cubes;
+}
+

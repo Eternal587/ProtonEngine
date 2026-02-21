@@ -44,6 +44,8 @@
 #include "shapes_renderer.h"
 #include "MapParser.h"
 #include "Models.h"
+#include "Audio.h"
+int mouse = 0;
 
 float yaw = -90.0f; // start facing forward (−Z)
 float pitch = 0.0f;
@@ -54,28 +56,30 @@ static bool firstMouse = true;
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
-    static float sensitivity = 0.2f;
-
-    if (firstMouse) {
+    if(mouse == 0) {
+        static float sensitivity = 0.2f;
+        
+        if (firstMouse) {
+            lastX = xpos;
+            lastY = ypos;
+            firstMouse = false;
+        }
+        
+        float xoffset = xpos - lastX;
+        float yoffset = lastY - ypos;
         lastX = xpos;
         lastY = ypos;
-        firstMouse = false;
+        
+        xoffset *= sensitivity;
+        yoffset *= sensitivity;
+        
+        yaw   += xoffset;
+        pitch += yoffset;
+        
+        // clamp the pitch so we don't flip upside down
+        if (pitch > 89.0f)  pitch = 89.0f;
+        if (pitch < -89.0f) pitch = -89.0f;
     }
-
-    float xoffset = xpos - lastX;
-    float yoffset = lastY - ypos;
-    lastX = xpos;
-    lastY = ypos;
-
-    xoffset *= sensitivity;
-    yoffset *= sensitivity;
-
-    yaw   += xoffset;
-    pitch += yoffset;
-
-    // clamp the pitch so we don't flip upside down
-    if (pitch > 89.0f)  pitch = 89.0f;
-    if (pitch < -89.0f) pitch = -89.0f;
 }
 
 /// There is going to be 2 types of hitbox to make some collisions simplier for speed reasons
@@ -439,7 +443,6 @@ int main()
     
     glfwSetCursorPosCallback(window, mouse_callback);
     
-    int mouse = 0;
     
     GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
     const GLFWvidmode* mode = glfwGetVideoMode(primaryMonitor);
@@ -462,8 +465,6 @@ int main()
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 330");
     
-    
-    
     bool touching = false;
     
     float deltaTime = 0.0f; // Time between current frame and last frame
@@ -472,6 +473,7 @@ int main()
     
     while (!glfwWindowShouldClose(window))
     {
+        std::vector<Cube*> cubes = Renderer::returnCubes();
         // input + timing
         glfwPollEvents();
         
@@ -584,6 +586,7 @@ int main()
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             glUseProgram(shader);
             Renderer::RenderAll(shader);
+        
             
             // ImGui Menus
             ImGui::Begin("FPS");
@@ -598,59 +601,59 @@ int main()
                     if(ImGui::BeginTabBar("Objects")) {
                         
                         if(ImGui::BeginTabItem("Cubes")) {
-                            for(int i = 0; i < cubes.size(); i++) {
-                                if(ImGui::CollapsingHeader(cubes[i].name)) {
+                            for(int i = 0; i < (cubes.size() * 6); i = i + 6) {
+                                if(ImGui::CollapsingHeader(cubes[i / 6]->name.c_str(), true)) {
                                     // Positions
-                                    If(ImGui::BeginTabBar("Attributes")) {
+                                    if(ImGui::BeginTabBar("Attributes")) {
+                    
                                         if(ImGui::BeginTabItem("Position")) {
                                             // X Corrdinate
                                             
-                                            ImGui::Text(std::to_string(cubes[i].position.x));
-                                            
+                                            ImGui::Text(std::to_string(cubes[i / 6]->position.x).c_str());
+                                            ImGui::PushID(i);
                                             ImGui::SameLine();
-                                            
-                                            if(ImGui::Button("-")){
-                                                cubes[i].position.x = cubes[i].position.x - 0.1;
+                                            if(ImGui::Button("-")) {
+                                                cubes[i / 6]->position.x = cubes[i / 6]->position.x - 0.1;
                                             }
         
                                             ImGui::SameLine();
         
                                             if(ImGui::Button("+")){
-                                                cubes[i].position.x = cubes[i].position.x + 0.1;
+                                                cubes[i / 6]->position.x = cubes[i / 6]->position.x + 0.1;
                                             }
-        
+                                            ImGui::PopID();
                                             // Y Corrdinate
         
-                                            ImGui::Text(std::to_string(cubes[i].position.y));
+                                            ImGui::Text(std::to_string(cubes[i / 6]->position.y).c_str());
                                             
                                             ImGui::SameLine();
-                                            
+                                            ImGui::PushID(i + 1);
                                             if(ImGui::Button("-")){
-                                                cubes[i].position.y = cubes[i].position.y - 0.1;
+                                                cubes[i / 6]->position.y = cubes[i / 6]->position.y - 0.1;
                                             }
         
                                             ImGui::SameLine();
         
                                             if(ImGui::Button("+")){
-                                                cubes[i].position.y = cubes[i].position.y + 0.1;
+                                                cubes[i / 6]->position.y = cubes[i / 6]->position.y + 0.1;
                                             }
-        
+                                            ImGui::PopID();
                                             // Z Corrdinate
         
-                                            ImGui::Text(std::to_string(cubes[i].position.z));
+                                            ImGui::Text(std::to_string(cubes[i / 6]->position.z).c_str());
                                             
                                             ImGui::SameLine();
-                                            
+                                            ImGui::PushID(i + 2);
                                             if(ImGui::Button("-")){
-                                                cubes[i].position.z = cubes[i].position.z - 0.1;
+                                                cubes[i / 6]->position.z = cubes[i / 6]->position.z - 0.1;
                                             }
         
                                             ImGui::SameLine();
         
                                             if(ImGui::Button("+")){
-                                                cubes[i].position.z = cubes[i].position.z + 0.1;
+                                                cubes[i / 6]->position.z = cubes[i / 6]->position.z + 0.1;
                                             }
-
+                                            ImGui::PopID();
                                             ImGui::EndTabItem();
                                         }
     
@@ -659,52 +662,52 @@ int main()
         
                                             // X Dimension
                                             
-                                            ImGui::Text(std::to_string(cubes[i].dimensions.x));
+                                            ImGui::Text(std::to_string(cubes[i / 6]->dimensions.x).c_str());
                                             
                                             ImGui::SameLine();
-                                            
+                                            ImGui::PushID(i + 3);
                                             if(ImGui::Button("-")){
-                                                cubes[i].dimensions.x = cubes[i].dimensions.x - 0.1;
+                                                cubes[i / 6]->dimensions.x = cubes[i / 6]->dimensions.x - 0.1;
                                             }
-        
+                                            
                                             ImGui::SameLine();
         
                                             if(ImGui::Button("+")){
-                                                cubes[i].dimensions.x = cubes[i].dimensions.x + 0.1;
+                                                cubes[i / 6]->dimensions.x = cubes[i / 6]->dimensions.x + 0.1;
                                             }
-        
+                                            ImGui::PopID();
                                             // Y Dimension
         
-                                            ImGui::Text(std::to_string(cubes[i].dimensions.y));
+                                            ImGui::Text(std::to_string(cubes[i / 6]->dimensions.y).c_str());
                                             
                                             ImGui::SameLine();
-                                            
+                                            ImGui::PushID(i + 4);
                                             if(ImGui::Button("-")){
-                                                cubes[i].dimensions.y = cubes[i].dimensions.y - 0.1;
+                                                cubes[i / 6]->dimensions.y = cubes[i / 6]->dimensions.y - 0.1;
                                             }
         
                                             ImGui::SameLine();
         
                                             if(ImGui::Button("+")){
-                                                cubes[i].dimensions.y = cubes[i].dimensions.y + 0.1;
+                                                cubes[i / 6]->dimensions.y = cubes[i / 6]->dimensions.y + 0.1;
                                             }
-        
+                                            ImGui::PopID();
                                             // Z Dimensions
         
-                                            ImGui::Text(std::to_string(cubes[i].dimensions.z));
+                                            ImGui::Text(std::to_string(cubes[i / 6]->dimensions.z).c_str());
                                             
                                             ImGui::SameLine();
-                                            
+                                            ImGui::PushID(i + 5);
                                             if(ImGui::Button("-")){
-                                                cubes[i].dimensions.z = cubes[i].dimensions.z - 0.1;
+                                                cubes[i / 6]->dimensions.z = cubes[i / 6]->dimensions.z - 0.1;
                                             }
-        
+                                            
                                             ImGui::SameLine();
         
                                             if(ImGui::Button("+")){
-                                                cubes[i].dimensions.z = cubes[i].dimensions.z + 0.1;
+                                                cubes[i / 6]->dimensions.z = cubes[i / 6]->dimensions.z + 0.1;
                                             }
-
+                                            ImGui::PopID();
                                             ImGui::EndTabItem();
                                         }
     
@@ -713,32 +716,33 @@ int main()
     
                                             // X Axis
         
-                                            ImGui::Text(std::to_string(cubes[i].degree_x));
+                                            ImGui::Text(std::to_string(cubes[i / 6]->degree_x).c_str());
         
                                             ImGui::SameLine();
         
-                                            ImGui::SliderFloat("X Axis", &cubes[i].degree_x, 0.0f, 360.0f);
+                                            ImGui::SliderFloat("X Axis", &cubes[i / 6]->degree_x, 0.0f, 360.0f);
         
                                             // Y Axis
         
-                                            ImGui::Text(std::to_string(cubes[i].degree_y));
+                                            ImGui::Text(std::to_string(cubes[i / 6]->degree_y).c_str());
         
                                             ImGui::SameLine();
         
-                                            ImGui::SliderFloat("Y Axis", &cubes[i].degree_y, 0.0f, 360.0f);
+                                            ImGui::SliderFloat("Y Axis", &cubes[i / 6]->degree_y, 0.0f, 360.0f);
         
                                             // Z Axis
         
-                                            ImGui::Text(std::to_string(cubes[i].degree_z));
+                                            ImGui::Text(std::to_string(cubes[i / 6]->degree_z).c_str());
         
                                             ImGui::SameLine();
         
-                                            ImGui::SliderFloat("Z Axis", &cubes[i].degree_z, 0.0f, 360.0f);
+                                            ImGui::SliderFloat("Z Axis", &cubes[i / 6]->degree_z, 0.0f, 360.0f);
 
                                             ImGui::EndTabItem();
                                         }
+                        
+                                        ImGui::EndTabBar();
                                     }
-                
                                 }
                             }
                         }
@@ -750,10 +754,12 @@ int main()
                 }
                 ImGui::EndTabBar();
             }
+            ImGui::PopID();
             ImGui::End();
             
             ImGui::Render();
             ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        
             
             // upload uniforms AFTER glUseProgram
             int modelLoc = glGetUniformLocation(shader, "model");

@@ -19,9 +19,13 @@ public:
     static void RegisterCube(Cube* cube);
     static void RegisterMesh(Mesh* mesh);
     static void RenderAll(unsigned int shaderProgram);
+    
+    static std::vector<Cube*> returnCubes();
 
 private:
     static std::vector<Cube*> cubes;
     static std::vector<Slope*> slopes;
     static std::vector<Mesh*> meshs;
+    
 };
+
