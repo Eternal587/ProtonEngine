@@ -23,3 +23,5 @@ struct Object {
 };
 
 void parse_map(const std::string map);
+void save_map(const std::string loc);
+void unloadMap();

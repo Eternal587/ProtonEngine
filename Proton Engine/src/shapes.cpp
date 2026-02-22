@@ -610,3 +610,14 @@ glm::vec3 get_normal(glm::vec3 pos1, glm::vec3 pos2, glm::vec3 pos3) {
 }*/
 
 
+void Cube::deleteSelf() {
+    delete this;
+}
+
+void Slope::deleteSelf() {
+    delete this;
+}
+
+void clearHitboxes() {
+    hitboxes = {};
+}

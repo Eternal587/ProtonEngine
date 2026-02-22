@@ -42,3 +42,25 @@ std::vector<Cube*> Renderer::returnCubes() {
     return Renderer::cubes;
 }
 
+std::vector<Slope*> Renderer::returnSlopes() {
+    return Renderer::slopes;
+}
+
+void Renderer::deleteCube(int index) {
+    cubes[index]->deleteSelf();
+    cubes.erase(cubes.begin() + index);
+}
+
+void Renderer::deleteSlope(int index) {
+    slopes[index]->deleteSelf();
+    slopes.erase(slopes.begin() + index);
+}
+
+void Renderer::ClearAll() {
+    for(auto c : cubes) delete c;
+    cubes.clear();
+    for(auto s : slopes) delete s;
+    slopes.clear();
+    void clearHitboxes();
+    
+}

@@ -16,7 +16,7 @@
 // #include <windows.h>
 #include "json.hpp"
 
-using json = nlohmann::json;
+using json = nlohmann::ordered_json;
 
 std::string getExePath() {
     char pathBuffer[1024];
@@ -39,11 +39,20 @@ std::string getExePath() {
     return path;
 } */
 
-const bool debug = true;
+std::string removeAll(std::string str, const std::string& sub_to_remove) {
+    size_t pos = std::string::npos;
+    while ((pos = str.find(sub_to_remove)) != std::string::npos) {
+        str.erase(pos, sub_to_remove.length());
+    }
+    return str;
+}
+
+const bool debug = false;
 
 void parse_map(std::string map) {
     std::vector<Cube*> Cubes;
-    std::string filepath = getExePath() + "/resources/maps/" + map;
+    std::string filepath = getExePath();
+    filepath = filepath.erase(filepath.length() - 14, 14) + "/resources/maps/" + map;
     
     if (debug == true) {
         filepath = "/Users/vibingcatt/Documents/GitHub/ProtonEngine/Proton Engine/src/resources/maps/" + map;
@@ -51,6 +60,12 @@ void parse_map(std::string map) {
     
     /// Specifies the File your accessing
     std::ifstream stream(filepath);
+    
+    if (!stream.is_open()) {
+            std::cerr << "[ERROR] Map file not found: " << filepath << std::endl;
+            return; 
+    }
+    
     json data;
     stream >> data;
     
@@ -84,7 +99,8 @@ void parse_map(std::string map) {
         objects.push_back(obj);
     }
     
-    filepath = getExePath() + "/resources/textures/";
+    filepath = getExePath();
+    filepath = filepath.erase(filepath.length() - 14, 14) + "/resources/textures/";
     
     if (debug == true) {
         filepath = "/Users/vibingcatt/Documents/GitHub/ProtonEngine/Proton Engine/src/resources/textures/";
@@ -110,4 +126,104 @@ void parse_map(std::string map) {
                      objnum.SHINYNESS, objnum.ROTATION_X, objnum.ROTATION_Y, objnum.ROTATION_Z);
         }
     };
+}
+
+void save_map(std::string loc) {
+    
+    std::string filepath = getExePath();
+    filepath = filepath.erase(filepath.length() - 14, 14) + "/resources/textures/";
+    
+    if (debug == true) {
+        filepath = "/Users/vibingcatt/Documents/GitHub/ProtonEngine/Proton Engine/src/resources/textures/";
+    }
+    
+    json objects = json::array();
+    json data;
+    std::vector<Cube*> cubes = Renderer::returnCubes();
+    for(Cube* cube : cubes) {
+        data["NAME"] = cube->name;
+        data["TYPE_OF_OBJECT"] = "CUBE";
+        data["X"] = cube->position.x;
+        data["Y"] = cube->position.y;
+        data["Z"] = cube->position.z;
+        data["W"] = cube->dimensions.x;
+        data["H"] = cube->dimensions.y;
+        data["D"] = cube->dimensions.z;
+        data["R"] = cube->color.x;
+        data["G"] = cube->color.y;
+        data["B"] = cube->color.z;
+        data["PATH_TO_TEXTURE"] = removeAll(cube->pathtotexture, filepath);
+        data["MIPMAP_LEVELX"] = cube->tiles.x;
+        data["MIPMAP_LEVELY"] = cube->tiles.y;
+        data["MIPMAP_LEVELZ"] = cube->tiles.z;
+        data["SHINYNESS"] = cube->shinyness;
+        data["ROTATION_X"] = cube->degree_x;
+        data["ROTATION_Y"] = cube->degree_y;
+        data["ROTATION_Z"] = cube->degree_z;
+        
+        objects.push_back(data);
+    }
+    
+    std::vector<Slope*> slopes = Renderer::returnSlopes();
+    for(Slope* slope : slopes) {
+        data["NAME"] = slope->name;
+        data["TYPE_OF_OBJECT"] = "SLOPE";
+        data["X"] = slope->position.x;
+        data["Y"] = slope->position.y;
+        data["Z"] = slope->position.z;
+        data["W"] = slope->dimensions.x;
+        data["H"] = slope->dimensions.y;
+        data["D"] = slope->dimensions.z;
+        data["R"] = slope->color.x;
+        data["G"] = slope->color.y;
+        data["B"] = slope->color.z;
+        data["PATH_TO_TEXTURE"] = removeAll(slope->pathtotexture, filepath);
+        data["MIPMAP_LEVELX"] = slope->tiles.x;
+        data["MIPMAP_LEVELY"] = slope->tiles.y;
+        data["MIPMAP_LEVELZ"] = slope->tiles.z;
+        data["SHINYNESS"] = slope->shinyness;
+        data["ROTATION_X"] = slope->degree_x;
+        data["ROTATION_Y"] = slope->degree_y;
+        data["ROTATION_Z"] = slope->degree_z;
+        
+        objects.push_back(data);
+    }
+    
+    filepath = getExePath();
+    filepath = filepath.erase(filepath.length() - 14, 14) + "/resources/maps/";
+    
+    if (debug == true) {
+        filepath = "/Users/vibingcatt/Documents/GitHub/ProtonEngine/Proton Engine/src/resources/maps/";
+    }
+    
+    std::ofstream output;
+    std::string file = filepath.append(loc.append(".pmap"));
+    
+    output.open(file);
+    if(output.is_open()) {
+        output << objects.dump();
+        std::cout << "Map Successfully Saved!";
+    } else {
+        std::cout << "File Failed to Save";
+    }
+    
+    
+}
+
+void unloadMap() {
+    std::vector<Cube*> cubes = Renderer::returnCubes();
+    std::vector<Slope*> slopes = Renderer::returnSlopes();
+    int cubesDeleted = 0;
+    int slopesDeleted = 0;
+    
+    for(Cube* cube : cubes) {
+        cube->toDelete = true;
+        cubesDeleted++;
+    }
+    for(Slope* slope : slopes) {
+        slope->toDelete = true;
+        slopesDeleted++;
+    }
+    
+    std::cout << "Deleted " << cubesDeleted << " cubes and " << slopesDeleted << " slopes!";
 }

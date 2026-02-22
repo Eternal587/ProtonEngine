@@ -21,6 +21,10 @@ public:
     static void RenderAll(unsigned int shaderProgram);
     
     static std::vector<Cube*> returnCubes();
+    static std::vector<Slope*> returnSlopes();
+    static void deleteCube(int index);
+    static void deleteSlope(int index);
+    static void ClearAll();
 
 private:
     static std::vector<Cube*> cubes;

@@ -359,10 +359,11 @@ int main()
     /// Drawn on Screen
     
     std::string filepath = getExecutablePath();
+    filepath = filepath.erase(filepath.length() - 14, 14);
     
     std::cout << "Executable Being Run at: " << filepath << std::endl;
     
-    bool debug = true;
+    bool debug = false;
     
     if (debug == true) {
         filepath = "/Users/vibingcatt/Documents/GitHub/ProtonEngine/Proton Engine/src";
@@ -374,7 +375,7 @@ int main()
     
     glUseProgram(shader);
     
-    parse_map("Basic.amap");
+    parse_map("Stupid.pmap");
     
     struct Camera {
         glm::vec3 position;
@@ -465,15 +466,59 @@ int main()
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 330");
     
+    char mapNameBuffer[256];
+    
     bool touching = false;
     
     float deltaTime = 0.0f; // Time between current frame and last frame
     float lastFrame = 0.0f; // Time of last frame
     float gravity = -0.05f;
     
+    int newCubesCount = 0;
+    int newSlopesCount = 0;
+    
+    bool wasF1Pressed = false;
+    
+    std::vector<int> CubesToDelete;
+    std::vector<int> SlopesToDelete;
+    
+    bool parseMap = false;
+    bool deleteAll = false;
+    
     while (!glfwWindowShouldClose(window))
     {
         std::vector<Cube*> cubes = Renderer::returnCubes();
+        std::vector<Slope*> slopes = Renderer::returnSlopes();
+        
+        CubesToDelete = {};
+        SlopesToDelete = {};
+        
+            for(int i = 0; i < cubes.size(); i++) {
+                if(cubes[i]->toDelete) {
+                    CubesToDelete.push_back(i);
+                }
+            }
+            
+            for(int i = 0; i < slopes.size(); i++) {
+                if(slopes[i]->toDelete) {
+                    SlopesToDelete.push_back(i);
+                }
+            }
+            
+            for(int i = 0; i < CubesToDelete.size(); i++) {
+                Renderer::deleteCube(CubesToDelete[i]);
+                cubes.erase(cubes.begin() + CubesToDelete[i]);
+            }
+            
+            for(int i = 0; i < SlopesToDelete.size(); i++) {
+                Renderer::deleteSlope(SlopesToDelete[i]);
+                slopes.erase(slopes.begin() + SlopesToDelete[i]);
+            }
+            
+            if(parseMap) {
+                parse_map(std::string(mapNameBuffer).append(".pmap"));
+                parseMap = false;
+            }
         // input + timing
         glfwPollEvents();
         
@@ -513,16 +558,21 @@ int main()
         if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) player.position -= speed * camera_right;
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) player.position += speed * camera_right;
         
-        if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS) player.yvelocity += 0.1 ;
+        // if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS) player.yvelocity += 0.1 ;
         
         if(glfwGetKey(window, GLFW_KEY_F1) == GLFW_PRESS) {
-            if (mouse == 0) {
-                glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-                mouse = 1;
-            } else if (mouse == 1) {
-                glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-                mouse = 0;
+            if(wasF1Pressed == false) {
+                if (mouse == 0) {
+                    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+                    mouse = 1;
+                } else if (mouse == 1) {
+                    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+                    mouse = 0;
+                }
             }
+            wasF1Pressed = true;
+        } else {
+            wasF1Pressed = false;
         }
         
         
@@ -598,163 +648,137 @@ int main()
             if(ImGui::BeginTabBar("Debug")) {
                 if(ImGui::BeginTabItem("Object Manager")) {
                     
-                    if(ImGui::BeginTabBar("Objects")) {
-                        
-                        if(ImGui::BeginTabItem("Cubes")) {
-                            for(int i = 0; i < (cubes.size() * 6); i = i + 6) {
-                                if(ImGui::CollapsingHeader(cubes[i / 6]->name.c_str(), true)) {
-                                    // Positions
-                                    if(ImGui::BeginTabBar("Attributes")) {
-                    
-                                        if(ImGui::BeginTabItem("Position")) {
-                                            // X Corrdinate
-                                            
-                                            ImGui::Text(std::to_string(cubes[i / 6]->position.x).c_str());
-                                            ImGui::PushID(i);
-                                            ImGui::SameLine();
-                                            if(ImGui::Button("-")) {
-                                                cubes[i / 6]->position.x = cubes[i / 6]->position.x - 0.1;
-                                            }
-        
-                                            ImGui::SameLine();
-        
-                                            if(ImGui::Button("+")){
-                                                cubes[i / 6]->position.x = cubes[i / 6]->position.x + 0.1;
-                                            }
-                                            ImGui::PopID();
-                                            // Y Corrdinate
-        
-                                            ImGui::Text(std::to_string(cubes[i / 6]->position.y).c_str());
-                                            
-                                            ImGui::SameLine();
-                                            ImGui::PushID(i + 1);
-                                            if(ImGui::Button("-")){
-                                                cubes[i / 6]->position.y = cubes[i / 6]->position.y - 0.1;
-                                            }
-        
-                                            ImGui::SameLine();
-        
-                                            if(ImGui::Button("+")){
-                                                cubes[i / 6]->position.y = cubes[i / 6]->position.y + 0.1;
-                                            }
-                                            ImGui::PopID();
-                                            // Z Corrdinate
-        
-                                            ImGui::Text(std::to_string(cubes[i / 6]->position.z).c_str());
-                                            
-                                            ImGui::SameLine();
-                                            ImGui::PushID(i + 2);
-                                            if(ImGui::Button("-")){
-                                                cubes[i / 6]->position.z = cubes[i / 6]->position.z - 0.1;
-                                            }
-        
-                                            ImGui::SameLine();
-        
-                                            if(ImGui::Button("+")){
-                                                cubes[i / 6]->position.z = cubes[i / 6]->position.z + 0.1;
-                                            }
-                                            ImGui::PopID();
-                                            ImGui::EndTabItem();
-                                        }
-    
-                                        // Dimensions
-                                        if(ImGui::BeginTabItem("Dimensions")) {
-        
-                                            // X Dimension
-                                            
-                                            ImGui::Text(std::to_string(cubes[i / 6]->dimensions.x).c_str());
-                                            
-                                            ImGui::SameLine();
-                                            ImGui::PushID(i + 3);
-                                            if(ImGui::Button("-")){
-                                                cubes[i / 6]->dimensions.x = cubes[i / 6]->dimensions.x - 0.1;
-                                            }
-                                            
-                                            ImGui::SameLine();
-        
-                                            if(ImGui::Button("+")){
-                                                cubes[i / 6]->dimensions.x = cubes[i / 6]->dimensions.x + 0.1;
-                                            }
-                                            ImGui::PopID();
-                                            // Y Dimension
-        
-                                            ImGui::Text(std::to_string(cubes[i / 6]->dimensions.y).c_str());
-                                            
-                                            ImGui::SameLine();
-                                            ImGui::PushID(i + 4);
-                                            if(ImGui::Button("-")){
-                                                cubes[i / 6]->dimensions.y = cubes[i / 6]->dimensions.y - 0.1;
-                                            }
-        
-                                            ImGui::SameLine();
-        
-                                            if(ImGui::Button("+")){
-                                                cubes[i / 6]->dimensions.y = cubes[i / 6]->dimensions.y + 0.1;
-                                            }
-                                            ImGui::PopID();
-                                            // Z Dimensions
-        
-                                            ImGui::Text(std::to_string(cubes[i / 6]->dimensions.z).c_str());
-                                            
-                                            ImGui::SameLine();
-                                            ImGui::PushID(i + 5);
-                                            if(ImGui::Button("-")){
-                                                cubes[i / 6]->dimensions.z = cubes[i / 6]->dimensions.z - 0.1;
-                                            }
-                                            
-                                            ImGui::SameLine();
-        
-                                            if(ImGui::Button("+")){
-                                                cubes[i / 6]->dimensions.z = cubes[i / 6]->dimensions.z + 0.1;
-                                            }
-                                            ImGui::PopID();
-                                            ImGui::EndTabItem();
-                                        }
-    
-                                        // Rotations
-                                        if(ImGui::BeginTabItem("Rotations")) {
-    
-                                            // X Axis
-        
-                                            ImGui::Text(std::to_string(cubes[i / 6]->degree_x).c_str());
-        
-                                            ImGui::SameLine();
-        
-                                            ImGui::SliderFloat("X Axis", &cubes[i / 6]->degree_x, 0.0f, 360.0f);
-        
-                                            // Y Axis
-        
-                                            ImGui::Text(std::to_string(cubes[i / 6]->degree_y).c_str());
-        
-                                            ImGui::SameLine();
-        
-                                            ImGui::SliderFloat("Y Axis", &cubes[i / 6]->degree_y, 0.0f, 360.0f);
-        
-                                            // Z Axis
-        
-                                            ImGui::Text(std::to_string(cubes[i / 6]->degree_z).c_str());
-        
-                                            ImGui::SameLine();
-        
-                                            ImGui::SliderFloat("Z Axis", &cubes[i / 6]->degree_z, 0.0f, 360.0f);
+                    if (ImGui::BeginTabBar("Objects")) {
+                        // --- CUBES SECTION ---
+                        if (ImGui::BeginTabItem("Cubes")) {
+                            for (int i = 0; i < cubes.size(); i++) {
+                                ImGui::PushID(cubes[i]); // Use pointer as unique ID
+                                if (ImGui::CollapsingHeader(cubes[i]->name.c_str(), true)) {
+                                    // Name Input
+                                    char nameBuffer[128];
+                                    std::strncpy(nameBuffer, cubes[i]->name.c_str(), sizeof(nameBuffer) - 1);
+                                    nameBuffer[sizeof(nameBuffer) - 1] = '\0';
+                                    if (ImGui::InputText("Name", nameBuffer, IM_ARRAYSIZE(nameBuffer))) {
+                                        if (ImGui::IsItemDeactivatedAfterEdit()) cubes[i]->name = nameBuffer;
+                                    }
 
+                                    if (ImGui::BeginTabBar("Attributes")) {
+                                        if (ImGui::BeginTabItem("Position")) {
+                                            ImGui::SliderFloat3("Position", &cubes[i]->position.x, -10.0f, 10.0f);
                                             ImGui::EndTabItem();
                                         }
-                        
+                                        if (ImGui::BeginTabItem("Dimensions")) {
+                                            ImGui::SliderFloat3("Dimensions", &cubes[i]->dimensions.x, 0.0f, 20.0f);
+                                            ImGui::EndTabItem();
+                                        }
+                                        if (ImGui::BeginTabItem("Rotations")) {
+                                            ImGui::SliderFloat("X Axis", &cubes[i]->degree_x, 0.0f, 360.0f);
+                                            ImGui::SliderFloat("Y Axis", &cubes[i]->degree_y, 0.0f, 360.0f);
+                                            ImGui::SliderFloat("Z Axis", &cubes[i]->degree_z, 0.0f, 360.0f);
+                                            ImGui::EndTabItem();
+                                        }
                                         ImGui::EndTabBar();
                                     }
+                                    if(ImGui::Button("Delete Object")) {
+                                        cubes[i]->toDelete = true;
+                                    }
+                                }
+                                ImGui::PopID();
+                            }
+
+                            if (ImGui::Button("Create New Cube")) {
+                                if(newCubesCount == 0) {
+                                    new Cube("New Cube", glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "/resources/textures/prototype.png", glm::vec3(1.0f, 1.0f, 1.0f), 0.5f, 0.0f, 0.0f, 0.0f);
+                                    newCubesCount++;
+                                } else {
+                                    new Cube("New Cube" + newCubesCount, glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "/resources/textures/prototype.png", glm::vec3(1.0f, 1.0f, 1.0f), 0.5f, 0.0f, 0.0f, 0.0f);
+                                    newCubesCount++;
                                 }
                             }
+                            ImGui::EndTabItem();
                         }
+
+                        // --- SLOPES SECTION ---
+                        if (ImGui::BeginTabItem("Slopes")) {
+                            for (int i = 0; i < slopes.size(); i++) {
+                                ImGui::PushID(slopes[i]);
+                                if (ImGui::CollapsingHeader(slopes[i]->name.c_str(), true)) {
+                                    // Name Input
+                                    char nameBuffer[128];
+                                    std::strncpy(nameBuffer, slopes[i]->name.c_str(), sizeof(nameBuffer) - 1);
+                                    nameBuffer[sizeof(nameBuffer) - 1] = '\0';
+                                    if (ImGui::InputText("Name", nameBuffer, IM_ARRAYSIZE(nameBuffer))) {
+                                        if (ImGui::IsItemDeactivatedAfterEdit()) slopes[i]->name = nameBuffer;
+                                    }
+
+                                    if (ImGui::BeginTabBar("Attributes")) {
+                                        if (ImGui::BeginTabItem("Position")) {
+                                            ImGui::SliderFloat3("Position", &slopes[i]->position.x, -10.0f, 10.0f);
+                                            ImGui::EndTabItem();
+                                        }
+                                        if (ImGui::BeginTabItem("Dimensions")) {
+                                            ImGui::SliderFloat3("Dimensions", &slopes[i]->dimensions.x, 0.0f, 20.0f);
+                                            ImGui::EndTabItem();
+                                        }
+                                        if (ImGui::BeginTabItem("Rotations")) {
+                                            ImGui::SliderFloat("X Axis", &slopes[i]->degree_x, 0.0f, 360.0f);
+                                            ImGui::SliderFloat("Y Axis", &slopes[i]->degree_y, 0.0f, 360.0f);
+                                            ImGui::SliderFloat("Z Axis", &slopes[i]->degree_z, 0.0f, 360.0f);
+                                            ImGui::EndTabItem();
+                                        }
+                                        ImGui::EndTabBar();
+                                    }
+                                    if(ImGui::Button("Delete Object")) {
+                                        slopes[i]->toDelete = true;
+                                    }
+                                }
+                                ImGui::PopID();
+                            }
+
+                            if (ImGui::Button("Create New Slope")) {
+                                if(newSlopesCount == 0) {
+                                    new Slope("New Slope", glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "/resources/textures/prototype.png", glm::vec3(1.0f, 1.0f, 1.0f), 0.5f, 0.0f, 0.0f, 0.0f);
+                                    newSlopesCount++;
+                                } else {
+                                    new Slope("New Slope" + newSlopesCount, glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "/resources/textures/prototype.png", glm::vec3(1.0f, 1.0f, 1.0f), 0.5f, 0.0f, 0.0f, 0.0f);
+                                    newSlopesCount++;
+                                }
+                            }
+                            ImGui::EndTabItem();
+                        }
+                        ImGui::EndTabBar(); // Close "Objects" TabBar
+                    }
+                    ImGui::EndTabItem();
+                }
+                if(ImGui::BeginTabItem("Map Manager")) {
+                    
+                    if(ImGui::InputText("Map Name", mapNameBuffer, IM_ARRAYSIZE(mapNameBuffer))) {
                         
-                    ImGui::EndTabBar();
+                    }
+                    if(ImGui::Button("Save Map")) {
+                        save_map(std::string(mapNameBuffer));
+                    }
+                    ImGui::SameLine();
+                    if(ImGui::Button("Open Map")) {
+                        Renderer::ClearAll();
+                        unloadMap();
+                        parseMap = true;
                     }
                     
-                ImGui::EndTabItem();
+                    
+                    
+                    if(ImGui::Button("Delete All Objects")) {
+                        Renderer::ClearAll();
+                        unloadMap();
+                        
+                        newCubesCount = 0;
+                        newSlopesCount = 0;
+                        
+                    }
+                    ImGui::EndTabItem();
                 }
-                ImGui::EndTabBar();
             }
-            ImGui::PopID();
+            ImGui::EndTabBar();
             ImGui::End();
             
             ImGui::Render();

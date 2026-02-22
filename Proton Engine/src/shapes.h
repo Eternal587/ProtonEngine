@@ -29,10 +29,12 @@ public:
     float degree_x, degree_y, degree_z;
     std::string name;
     Hitbox hitbox;
+    bool toDelete;
 
     Cube(std::string cube_name, const glm::vec3& pos, const glm::vec3& dim, const glm::vec3& col, const std::string& path, glm::vec3 mipmap, float shine, float rotation_x, float rotation_y, float rotation_z);
     void Render(unsigned int shaderProgram);
-
+    
+    void deleteSelf();
 private:
     void setupMesh();
     void recalculate_normals();
@@ -53,10 +55,12 @@ public:
     float degree_x, degree_y, degree_z;
     std::string name;
     Hitbox hitbox;
+    bool toDelete;
 
     Slope(std::string slope_name, const glm::vec3& pos, const glm::vec3& dim, const glm::vec3& col, const std::string& path, glm::vec3 mipmap, float shine, float rotation_x, float rotation_y, float rotation_z);
     void Render(unsigned int shaderProgram);
-
+    
+    void deleteSelf();
 private:
     void setupMesh();
     void recalculate_normals();
@@ -79,6 +83,7 @@ glm::vec3 get_normal(glm::vec3 pos1, glm::vec3 pos2, glm::vec3 pos3);
 void RegisterHitbox(Hitbox hitbox);
 
 std::vector<Hitbox> returnHitboxes();
+void clearHitboxes();
 /*
 class Mesh {
     public:
