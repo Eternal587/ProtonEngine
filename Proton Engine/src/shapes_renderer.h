@@ -12,6 +12,7 @@
 class Cube;
 class Slope;
 class Mesh;
+class LightSource;
 
 class Renderer {
 public:
@@ -22,6 +23,7 @@ public:
     
     static std::vector<Cube*> returnCubes();
     static std::vector<Slope*> returnSlopes();
+    static std::vector<LightSource*> returnLights();
     static void deleteCube(int index);
     static void deleteSlope(int index);
     static void ClearAll();
@@ -30,6 +32,7 @@ private:
     static std::vector<Cube*> cubes;
     static std::vector<Slope*> slopes;
     static std::vector<Mesh*> meshs;
+    static std::vector<LightSource*> lightSources;
     
 };
 

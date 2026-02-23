@@ -35,6 +35,7 @@ public:
     void Render(unsigned int shaderProgram);
     
     void deleteSelf();
+    void reInitTexture();
 private:
     void setupMesh();
     void recalculate_normals();

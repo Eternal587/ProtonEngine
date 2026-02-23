@@ -658,6 +658,12 @@ int main()
                                     char nameBuffer[128];
                                     std::strncpy(nameBuffer, cubes[i]->name.c_str(), sizeof(nameBuffer) - 1);
                                     nameBuffer[sizeof(nameBuffer) - 1] = '\0';
+                                    
+                                    // Texture Input
+                                    char textureBuffer[256];
+                                    std::strncpy(textureBuffer, cubes[i]->pathtotexture.c_str(), sizeof(textureBuffer) - 1);
+                                    textureBuffer[sizeof(textureBuffer) - 1] = '\0';
+                                    
                                     if (ImGui::InputText("Name", nameBuffer, IM_ARRAYSIZE(nameBuffer))) {
                                         if (ImGui::IsItemDeactivatedAfterEdit()) cubes[i]->name = nameBuffer;
                                     }
@@ -675,6 +681,21 @@ int main()
                                             ImGui::SliderFloat("X Axis", &cubes[i]->degree_x, 0.0f, 360.0f);
                                             ImGui::SliderFloat("Y Axis", &cubes[i]->degree_y, 0.0f, 360.0f);
                                             ImGui::SliderFloat("Z Axis", &cubes[i]->degree_z, 0.0f, 360.0f);
+                                            ImGui::EndTabItem();
+                                        }
+                                        if (ImGui::BeginTabItem("Texture")) {
+                                            if (ImGui::InputText("Texture File", textureBuffer, IM_ARRAYSIZE(textureBuffer))) {
+                                                if (ImGui::IsItemDeactivatedAfterEdit()) {
+                                                    cubes[i]->pathtotexture = textureBuffer;
+                                                    cubes[i]->reInitTexture();
+                                                }
+                                            }
+                                            if(ImGui::SliderFloat3("Mipmap Levels", &cubes[i]->tiles.x, 0.0f, 20.0f)) {
+                                                cubes[i]->reInitTexture();
+                                            }
+                                            if(ImGui::SliderFloat("Diffuse Level", &cubes[i]->shinyness, 0.0f, 1.0f)) {
+                                                cubes[i]->reInitTexture();
+                                            }
                                             ImGui::EndTabItem();
                                         }
                                         ImGui::EndTabBar();

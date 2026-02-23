@@ -45,6 +45,9 @@ std::vector<Cube*> Renderer::returnCubes() {
 std::vector<Slope*> Renderer::returnSlopes() {
     return Renderer::slopes;
 }
+std::vector<LightSource*> Renderer::returnLights() {
+    return Renderer::lightSources;
+}
 
 void Renderer::deleteCube(int index) {
     cubes[index]->deleteSelf();
