@@ -19,6 +19,7 @@ public:
     static void RegisterSlope(Slope* slope);
     static void RegisterCube(Cube* cube);
     static void RegisterMesh(Mesh* mesh);
+    static void RegisterLight(LightSource* light);
     static void RenderAll(unsigned int shaderProgram);
     
     static std::vector<Cube*> returnCubes();
@@ -26,13 +27,14 @@ public:
     static std::vector<LightSource*> returnLights();
     static void deleteCube(int index);
     static void deleteSlope(int index);
+    static void deleteLight(int index);
     static void ClearAll();
 
 private:
     static std::vector<Cube*> cubes;
     static std::vector<Slope*> slopes;
     static std::vector<Mesh*> meshs;
-    static std::vector<LightSource*> lightSources;
+    static std::vector<LightSource*> lightsources;
     
 };
 

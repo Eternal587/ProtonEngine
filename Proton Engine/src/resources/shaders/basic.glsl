@@ -28,8 +28,6 @@ void main()
     vertexColor = aColor;
     TexCoord = aTexCoord;
     
-    light_sources = alight_sources;
-    light_color = alight_color;
     normal = aNormal;
     FragPos = vec3(model * vec4(aPos, 1.0));
     specularStrength = aShinyness;
@@ -38,6 +36,15 @@ void main()
 
 #shader fragment
 #version 330 core
+
+struct LightSource {
+    vec3 position;
+    vec3 color;
+};
+#define MAX_LIGHTS 30
+uniform int NRLightSources;
+uniform LightSource lightSources[30];
+
 uniform vec3 viewPos;
 out vec4 FragColor;
 
@@ -47,24 +54,10 @@ in float specularStrength;
 
 in vec3 normal;
 in vec3 FragPos;
-in vec3 light_sources;
-in vec3 light_color;
 
 uniform sampler2D texture1;
 uniform sampler2D diffuseTexture;
 uniform sampler2D speccularTexture;
-
-vec3 norm = normalize(normal);
-vec3 lightDir = normalize(light_sources - FragPos);
-
-float diff = max(dot(norm, lightDir), 0.0);
-vec3 diffuse = diff * light_color * vec3(texture(diffuseTexture, TexCoord));
-
-vec3 viewDir = normalize(viewPos - FragPos);
-vec3 reflectDir = reflect(-lightDir, norm);
-
-float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
-vec3 specular = specularStrength * spec * light_color;
 
 void main()
 {
@@ -74,7 +67,27 @@ void main()
     if (texColor.a < 0.1)
             discard;
     
-    FragColor = texColor * vec4(vertexColor * (ambient_strength + diffuse + specular), 1.0);
+    vec3 norm = normalize(normal);
+    vec3 result = vec3(0.0f);
+    
+    int numLights = clamp(NRLightSources, 0, MAX_LIGHTS);
+    
+    for(int i = 0; i < numLights; i++) {
+        vec3 lightDir = normalize(lightSources[i].position - FragPos);
+        
+        float diff = max(dot(norm, lightDir), 0.0);
+        vec3 diffuse = diff * lightSources[i].color * vec3(texture(diffuseTexture, TexCoord));
+        
+        vec3 viewDir = normalize(viewPos - FragPos);
+        vec3 reflectDir = reflect(-lightDir, norm);
+        
+        float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
+        vec3 specular = specularStrength * spec * lightSources[i].color;
+        
+        result += (diffuse + specular);
+    }
+    
+    vec3 finalColor = vertexColor * (vec3(ambient_strength) + result);
+    
+    FragColor = texColor * vec4(finalColor, 1.0);
 }
-
-

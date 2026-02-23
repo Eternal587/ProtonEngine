@@ -67,6 +67,7 @@ void Cube::setupMesh() {
     
     /// hitbox.position = position - glm::vec3(hitbox.half_extents.x, hitbox.half_extents.y, hitbox.half_extents.z);
     
+    hitboxIndex = hitboxes.size();
     RegisterHitbox(hitbox);
 
     float verts[] = {
@@ -623,6 +624,75 @@ void Slope::recalculate_normals() {
     glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
 }
 
+void Slope::reInitTexture() {
+    stbi_set_flip_vertically_on_load(true);
+    int width, height, nr_channels;
+    int d_width, d_height, d_nr_channels;
+    unsigned char *data = stbi_load(pathtotexture.c_str(), &width, &height, &nr_channels, 0);
+    
+    std::string diffuse_path = pathtotexture.substr(0, pathtotexture.find(".")) + "_diffuse" + (pathtotexture.substr(pathtotexture.find("."), pathtotexture.length() - 1));
+    
+    unsigned char *data_diffuse = stbi_load(diffuse_path.c_str(), &d_width, &d_height, &d_nr_channels, 0);
+    
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    // wrapping and filtering
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    
+    /// glTexImage2D(Texture type, mipmap level, how we want OpenGL to store said textures, setting the width and height of the texture, (always 0: "legacy stuff"),  format, data type, imagedata)
+    if (!data) {
+        std::cerr << "Failed to load base texture: " << pathtotexture << std::endl;
+        return;
+    }
+    
+    if (!data) {
+    std::cerr << "Failed to load base texture: " << pathtotexture << std::endl;
+    return;
+}
+    if(data) {
+        GLenum format = (nr_channels == 4) ? GL_RGBA : GL_RGB;
+        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+
+        glGenerateMipmap(GL_TEXTURE_2D);
+    } else {
+        std::cout << "Failed to load the texture\n";
+    }
+    
+    glGenTextures(1, &diffuse_texture);
+    glBindTexture(GL_TEXTURE_2D, diffuse_texture);
+    
+    // wrapping and filtering
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    
+    if(data_diffuse) {
+        GLenum format = (d_nr_channels == 4) ? GL_RGBA : GL_RGB;
+        glTexImage2D(GL_TEXTURE_2D, 0, format, d_width, d_height, 0, format, GL_UNSIGNED_BYTE, data_diffuse);
+
+        glGenerateMipmap(GL_TEXTURE_2D);
+    } else {
+        std::cout << "Failed to load the texture\n";
+    }
+    if (!data_diffuse) {
+        std::cerr << "Failed to load base texture: " << diffuse_path << std::endl;
+        diffuse_texture = texture;
+    }
+
+    
+    
+    
+    stbi_image_free(data);
+    stbi_image_free(data_diffuse);
+    
+    recalculate_normals();
+}
+
 void Slope::Render(unsigned int shaderProgram) {
         glm::mat4 model = glm::translate(glm::mat4(1.0f), position);
         
@@ -672,6 +742,7 @@ glm::vec3 get_normal(glm::vec3 pos1, glm::vec3 pos2, glm::vec3 pos3) {
 
 
 void Cube::deleteSelf() {
+    hitboxes.erase(hitboxes.begin() + hitboxIndex);
     delete this;
 }
 
@@ -679,6 +750,14 @@ void Slope::deleteSelf() {
     delete this;
 }
 
+void LightSource::deleteSelf() {
+    this->toDelete = true;
+}
+
 void clearHitboxes() {
     hitboxes = {};
+}
+
+LightSource::LightSource(std::string name, const glm::vec3& pos, const glm::vec3& col) : color(col), position(pos) {
+    Renderer::RegisterLight(this);
 }

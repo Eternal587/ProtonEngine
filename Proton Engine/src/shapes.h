@@ -16,6 +16,7 @@ struct Hitbox {
 
 class Cube {
 public:
+    int hitboxIndex;
     glm::vec3 last_pos;
     glm::vec3 last_dir;
     unsigned int VAO, VBO, EBO;
@@ -62,16 +63,21 @@ public:
     void Render(unsigned int shaderProgram);
     
     void deleteSelf();
+    void reInitTexture();
 private:
     void setupMesh();
     void recalculate_normals();
 };
 
-struct LightSource {
+class LightSource {
+public:
+    bool toDelete;
+    std::string name;
     glm::vec3 position;
     glm::vec3 color;
     
-    LightSource(const glm::vec3& pos, const glm::vec3& col);
+    LightSource(std::string name, const glm::vec3& pos, const glm::vec3& col);
+    void deleteSelf();
 };
 
 class Skybox {

@@ -125,6 +125,9 @@ void parse_map(std::string map) {
                      glm::vec3(objnum.MIPMAP_LEVELX, objnum.MIPMAP_LEVELY, objnum.MIPMAP_LEVELZ),
                      objnum.SHINYNESS, objnum.ROTATION_X, objnum.ROTATION_Y, objnum.ROTATION_Z);
         }
+        if(objnum.TYPE_OF_OBJECT == "LIGHT") {
+            new LightSource(objnum.NAME, glm::vec3(objnum.X, objnum.Y, objnum.Z), glm::vec3(objnum.R, objnum.G, objnum.B));
+        }
     };
 }
 
@@ -188,6 +191,28 @@ void save_map(std::string loc) {
         
         objects.push_back(data);
     }
+    std::vector<LightSource*> lights = Renderer::returnLights();
+    for (LightSource* light : lights) {
+        data["NAME"] = light->name;
+        data["TYPE_OF_OBJECT"] = "LIGHT";
+        data["X"] = light->position.x;
+        data["Y"] = light->position.y;
+        data["Z"] = light->position.z;
+        data["W"] = 0.0f;
+        data["H"] = 0.0f;
+        data["D"] = 0.0f;
+        data["R"] = light->color.x;
+        data["G"] = light->color.y;
+        data["B"] = light->color.z;
+        data["PATH_TO_TEXTURE"] = "";
+        data["MIPMAP_LEVELX"] = 0.0f;
+        data["MIPMAP_LEVELY"] = 0.0f;
+        data["MIPMAP_LEVELZ"] = 0.0f;
+        data["SHINYNESS"] = 0.0f;
+        data["ROTATION_X"] = 0.0f;
+        data["ROTATION_Y"] = 0.0f;
+        data["ROTATION_Z"] = 0.0f;
+    }
     
     filepath = getExePath();
     filepath = filepath.erase(filepath.length() - 14, 14) + "/resources/maps/";
@@ -213,8 +238,10 @@ void save_map(std::string loc) {
 void unloadMap() {
     std::vector<Cube*> cubes = Renderer::returnCubes();
     std::vector<Slope*> slopes = Renderer::returnSlopes();
+    std::vector<LightSource*> lights = Renderer::returnLights();
     int cubesDeleted = 0;
     int slopesDeleted = 0;
+    int lightsDeleted = 0;
     
     for(Cube* cube : cubes) {
         cube->toDelete = true;
@@ -223,6 +250,10 @@ void unloadMap() {
     for(Slope* slope : slopes) {
         slope->toDelete = true;
         slopesDeleted++;
+    }
+    for(LightSource* light : lights) {
+        light->toDelete = true;
+        lightsDeleted++;
     }
     
     std::cout << "Deleted " << cubesDeleted << " cubes and " << slopesDeleted << " slopes!";

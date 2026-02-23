@@ -388,7 +388,7 @@ int main()
     
     Camera player;
     
-    player.position = glm::vec3(6.0f, 3.0f, 5.0f);
+    player.position = glm::vec3(6.0f, 0.7f, 5.0f);
     player.yaw = 0.0f;
     player.pitch = 0.0f;
     player.hitbox.position = glm::vec3(player.position.x, (player.position.y - 0.6f), player.position.z);
@@ -476,22 +476,29 @@ int main()
     
     int newCubesCount = 0;
     int newSlopesCount = 0;
+    int newLightsCount = 0;
     
     bool wasF1Pressed = false;
     
     std::vector<int> CubesToDelete;
     std::vector<int> SlopesToDelete;
+    std::vector<int> LightsToDelete;
     
     bool parseMap = false;
     bool deleteAll = false;
+    
     
     while (!glfwWindowShouldClose(window))
     {
         std::vector<Cube*> cubes = Renderer::returnCubes();
         std::vector<Slope*> slopes = Renderer::returnSlopes();
+        std::vector<LightSource*> lights = Renderer::returnLights();
+        
+        int lightAmount = lights.size();
         
         CubesToDelete = {};
         SlopesToDelete = {};
+        LightsToDelete = {};
         
             for(int i = 0; i < cubes.size(); i++) {
                 if(cubes[i]->toDelete) {
@@ -505,6 +512,13 @@ int main()
                 }
             }
             
+            for(int i = 0; i < lights.size(); i++) {
+                if(lights[i]->toDelete) {
+                    LightsToDelete.push_back(i);
+                }
+            }
+
+            
             for(int i = 0; i < CubesToDelete.size(); i++) {
                 Renderer::deleteCube(CubesToDelete[i]);
                 cubes.erase(cubes.begin() + CubesToDelete[i]);
@@ -513,6 +527,11 @@ int main()
             for(int i = 0; i < SlopesToDelete.size(); i++) {
                 Renderer::deleteSlope(SlopesToDelete[i]);
                 slopes.erase(slopes.begin() + SlopesToDelete[i]);
+            }
+        
+            for(int i = 0; i < LightsToDelete.size(); i++) {
+                Renderer::deleteLight(LightsToDelete[i]);
+                lights.erase(lights.begin() + LightsToDelete[i]);
             }
             
             if(parseMap) {
@@ -731,6 +750,11 @@ int main()
                                     if (ImGui::InputText("Name", nameBuffer, IM_ARRAYSIZE(nameBuffer))) {
                                         if (ImGui::IsItemDeactivatedAfterEdit()) slopes[i]->name = nameBuffer;
                                     }
+                                    
+                                    // Texture Input
+                                    char textureBuffer[256];
+                                    std::strncpy(textureBuffer, slopes[i]->pathtotexture.c_str(), sizeof(textureBuffer) - 1);
+                                    textureBuffer[sizeof(textureBuffer) - 1] = '\0';
 
                                     if (ImGui::BeginTabBar("Attributes")) {
                                         if (ImGui::BeginTabItem("Position")) {
@@ -745,6 +769,21 @@ int main()
                                             ImGui::SliderFloat("X Axis", &slopes[i]->degree_x, 0.0f, 360.0f);
                                             ImGui::SliderFloat("Y Axis", &slopes[i]->degree_y, 0.0f, 360.0f);
                                             ImGui::SliderFloat("Z Axis", &slopes[i]->degree_z, 0.0f, 360.0f);
+                                            ImGui::EndTabItem();
+                                        }
+                                        if (ImGui::BeginTabItem("Texture")) {
+                                            if (ImGui::InputText("Texture File", textureBuffer, IM_ARRAYSIZE(textureBuffer))) {
+                                                if (ImGui::IsItemDeactivatedAfterEdit()) {
+                                                    slopes[i]->pathtotexture = textureBuffer;
+                                                    slopes[i]->reInitTexture();
+                                                }
+                                            }
+                                            if(ImGui::SliderFloat3("Mipmap Levels", &slopes[i]->tiles.x, 0.0f, 20.0f)) {
+                                                slopes[i]->reInitTexture();
+                                            }
+                                            if(ImGui::SliderFloat("Diffuse Level", &slopes[i]->shinyness, 0.0f, 1.0f)) {
+                                                slopes[i]->reInitTexture();
+                                            }
                                             ImGui::EndTabItem();
                                         }
                                         ImGui::EndTabBar();
@@ -763,6 +802,49 @@ int main()
                                 } else {
                                     new Slope("New Slope" + newSlopesCount, glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), filepath + "/resources/textures/prototype.png", glm::vec3(1.0f, 1.0f, 1.0f), 0.5f, 0.0f, 0.0f, 0.0f);
                                     newSlopesCount++;
+                                }
+                            }
+                            ImGui::EndTabItem();
+                        }
+                        // Lights Section
+                        if (ImGui::BeginTabItem("Lights")) {
+                            for (int i = 0; i < lights.size(); i++) {
+                                ImGui::PushID(lights[i]);
+                                if (ImGui::CollapsingHeader(lights[i]->name.c_str(), true)) {
+                                    // Name Input
+                                    char nameBuffer[128];
+                                    std::strncpy(nameBuffer, lights[i]->name.c_str(), sizeof(nameBuffer) - 1);
+                                    nameBuffer[sizeof(nameBuffer) - 1] = '\0';
+                                    if (ImGui::InputText("Name", nameBuffer, IM_ARRAYSIZE(nameBuffer))) {
+                                        if (ImGui::IsItemDeactivatedAfterEdit()) lights[i]->name = nameBuffer;
+                                    }
+
+                                    if (ImGui::BeginTabBar("Attributes")) {
+                                        if (ImGui::BeginTabItem("Position")) {
+                                            ImGui::SliderFloat3("Position", &lights[i]->position.x, -10.0f, 10.0f);
+                                            ImGui::EndTabItem();
+                                        }
+                                        if (ImGui::BeginTabItem("Color")) {
+                                            ImGui::SliderFloat3("Color", &lights[i]->color.x, 0.0f, 1.0f);
+                                            ImGui::EndTabItem();
+                                        }
+                                        ImGui::EndTabBar();
+                                    }
+                                    if(ImGui::Button("Delete Object")) {
+                                        lights[i]->toDelete = true;
+                                        lightAmount--;
+                                    }
+                                }
+                                ImGui::PopID();
+                            }
+
+                            if (ImGui::Button("Create New Light")) {
+                                if(newLightsCount == 0) {
+                                    new LightSource("New Light", glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+                                    newSlopesCount++;
+                                } else {
+                                    new LightSource("New Light" + newLightsCount, glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+                                    newLightsCount++;
                                 }
                             }
                             ImGui::EndTabItem();
@@ -811,14 +893,21 @@ int main()
             int viewLoc  = glGetUniformLocation(shader, "view");
             int projLoc  = glGetUniformLocation(shader, "projection");
             
-            int lightLoc = glGetUniformLocation(shader, "alight_sources");
-            int lightColLoc = glGetUniformLocation(shader, "alight_color");
+            int lightLoc = glGetUniformLocation(shader, "lightSources");
+            int LightsAmount = glGetUniformLocation(shader, "NRLightSources");
             int CamPosLoc = glGetUniformLocation(shader, "viewPos");
             
             glUniform3f(CamPosLoc, player.position.x, player.position.y, player.position.z);
             
-            glUniform3f(lightLoc, 5.0f, 5.0f, 5.0f);
-            glUniform3f(lightColLoc, 1.0f, 1.0f, 1.0f);
+            
+            glUniform1i(LightsAmount, lightAmount);
+            for (int i = 0; i < lightAmount; i++) {
+                std::string posName = "lightSources[" + std::to_string(i) + "].position";
+                std::string colName = "lightSources[" + std::to_string(i) + "].color";
+                
+                glUniform3fv(glGetUniformLocation(shader, posName.c_str()), 1, &lights[i]->position[0]);
+                glUniform3fv(glGetUniformLocation(shader, colName.c_str()), 1, &lights[i]->color[0]);
+            }
             
             if (modelLoc >= 0) glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
             if (viewLoc  >= 0) glUniformMatrix4fv(viewLoc,  1, GL_FALSE, glm::value_ptr(view));

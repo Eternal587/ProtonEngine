@@ -13,6 +13,7 @@
 
 std::vector<Cube*> Renderer::cubes;
 std::vector<Slope*> Renderer::slopes;
+std::vector<LightSource*> Renderer::lightsources;
 
 void Renderer::RegisterCube(Cube* cube) {
     cubes.push_back(cube);
@@ -24,10 +25,10 @@ void Renderer::RegisterSlope(Slope* slope) {
     std::cout << "Registered Slope\n";
 }
 
-/*void Renderer::RegisterMesh(Mesh* mesh) {
-    meshs.push_back(mesh);
-    std::cout << "Registered Mesh\n";
-}*/
+void Renderer::RegisterLight(LightSource* light) {
+    lightsources.push_back(light);
+    std::cout << "Registered Light\n";
+}
 
 void Renderer::RenderAll(unsigned int shaderProgram) {
     for (Cube* cube : cubes)
@@ -45,8 +46,9 @@ std::vector<Cube*> Renderer::returnCubes() {
 std::vector<Slope*> Renderer::returnSlopes() {
     return Renderer::slopes;
 }
+
 std::vector<LightSource*> Renderer::returnLights() {
-    return Renderer::lightSources;
+    return Renderer::lightsources;
 }
 
 void Renderer::deleteCube(int index) {
@@ -57,6 +59,11 @@ void Renderer::deleteCube(int index) {
 void Renderer::deleteSlope(int index) {
     slopes[index]->deleteSelf();
     slopes.erase(slopes.begin() + index);
+}
+
+void Renderer::deleteLight(int index) {
+    lightsources[index]->deleteSelf();
+    lightsources.erase(lightsources.begin() + index);
 }
 
 void Renderer::ClearAll() {
