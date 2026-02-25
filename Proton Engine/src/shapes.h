@@ -12,6 +12,7 @@
 
 struct Hitbox {
     glm::vec3 position, dimensions, dir, axes[3], half_extents;
+    unsigned int VAO, VBO, EBO;
 };
 
 class Cube {
@@ -81,8 +82,15 @@ public:
 };
 
 class Skybox {
-    std::string pathtotexture;
-    Skybox(std::string texture_path);
+public:
+    unsigned int VAO, VBO, EBO;
+    unsigned int textureID;
+    std::vector<std::string> faces;
+    Skybox(std::vector<std::string> textures);
+    void Render(unsigned int shader);
+
+private:
+    void Setup();
 };
 
 glm::vec3 get_normal(glm::vec3 pos1, glm::vec3 pos2, glm::vec3 pos3);

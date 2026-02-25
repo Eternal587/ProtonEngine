@@ -761,3 +761,126 @@ void clearHitboxes() {
 LightSource::LightSource(std::string name, const glm::vec3& pos, const glm::vec3& col) : color(col), position(pos) {
     Renderer::RegisterLight(this);
 }
+
+Skybox::Skybox(std::vector<std::string> textures) : faces(textures) {
+    Skybox::Setup();
+}
+
+void Skybox::Setup() {
+    
+    float skyboxVertices[] = {
+        // positions
+        -1.0f,  1.0f, -1.0f,
+        -1.0f, -1.0f, -1.0f,
+         1.0f, -1.0f, -1.0f,
+         1.0f, -1.0f, -1.0f,
+         1.0f,  1.0f, -1.0f,
+        -1.0f,  1.0f, -1.0f,
+
+        -1.0f, -1.0f,  1.0f,
+        -1.0f, -1.0f, -1.0f,
+        -1.0f,  1.0f, -1.0f,
+        -1.0f,  1.0f, -1.0f,
+        -1.0f,  1.0f,  1.0f,
+        -1.0f, -1.0f,  1.0f,
+
+         1.0f, -1.0f, -1.0f,
+         1.0f, -1.0f,  1.0f,
+         1.0f,  1.0f,  1.0f,
+         1.0f,  1.0f,  1.0f,
+         1.0f,  1.0f, -1.0f,
+         1.0f, -1.0f, -1.0f,
+
+        -1.0f, -1.0f,  1.0f,
+        -1.0f,  1.0f,  1.0f,
+         1.0f,  1.0f,  1.0f,
+         1.0f,  1.0f,  1.0f,
+         1.0f, -1.0f,  1.0f,
+        -1.0f, -1.0f,  1.0f,
+
+        -1.0f,  1.0f, -1.0f,
+         1.0f,  1.0f, -1.0f,
+         1.0f,  1.0f,  1.0f,
+         1.0f,  1.0f,  1.0f,
+        -1.0f,  1.0f,  1.0f,
+        -1.0f,  1.0f, -1.0f,
+
+        -1.0f, -1.0f, -1.0f,
+        -1.0f, -1.0f,  1.0f,
+         1.0f, -1.0f, -1.0f,
+         1.0f, -1.0f, -1.0f,
+        -1.0f, -1.0f,  1.0f,
+         1.0f, -1.0f,  1.0f
+    };
+    
+    unsigned int inds[] = {
+        0,1,2,  2,3,0,        // back
+        4,5,6,  6,7,4,        // front
+        8,9,10, 10,11,8,      // left
+        12,13,14, 14,15,12,   // right
+        16,17,18, 18,19,16,   // bottom
+        20,21,22, 22,23,20    // top
+    };
+    
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+
+    glBindVertexArray(VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), skyboxVertices, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(inds), inds, GL_STATIC_DRAW);
+    
+    
+    /// Position
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 12 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    
+    
+    
+      glGenTextures(1, &this->textureID);
+      glBindTexture(GL_TEXTURE_CUBE_MAP, this->textureID);
+
+      int width, height, nrChannels;
+      for (unsigned int i = 0; i < faces.size(); i++)
+      {
+          unsigned char *data = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, 0);
+          if (data)
+          {
+              glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+                           0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data
+              );
+              stbi_image_free(data);
+          }
+          else
+          {
+              std::cout << "Cubemap tex failed to load at path: " << faces[i] << std::endl;
+              stbi_image_free(data);
+          }
+      }
+      glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+      glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+      glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    
+    Renderer::setSkyBox(this);
+}
+
+void Skybox::Render(unsigned int shader) {
+    glUseProgram(shader);
+        
+    // 1. Set the sampler to point to Texture Unit 0
+    glUniform1i(glGetUniformLocation(shader, "skybox"), 0);
+
+    glBindVertexArray(VAO);
+    
+    // 2. Activate Unit 0 and bind your specific texture ID
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, this->textureID);
+
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+    glBindVertexArray(0);
+}

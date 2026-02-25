@@ -14,6 +14,7 @@
 std::vector<Cube*> Renderer::cubes;
 std::vector<Slope*> Renderer::slopes;
 std::vector<LightSource*> Renderer::lightsources;
+Skybox* Renderer::skybox;
 
 void Renderer::RegisterCube(Cube* cube) {
     cubes.push_back(cube);
@@ -73,4 +74,14 @@ void Renderer::ClearAll() {
     slopes.clear();
     void clearHitboxes();
     
+}
+
+void Renderer::RenderSkybox(unsigned int shader) {
+    if (Renderer::skybox != nullptr) {
+            Renderer::skybox->Render(shader);
+    }
+}
+
+void Renderer::setSkyBox(Skybox* skybox) {
+    Renderer::skybox = skybox;
 }

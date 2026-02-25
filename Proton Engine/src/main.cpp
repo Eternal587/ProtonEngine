@@ -299,79 +299,52 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
 int main()
 {
-    /// Check to make sure GLFW Was Initilzed Properly
-    
     if(!glfwInit()) {
         std::cout << "GLFW Failed to Initalize" << std::endl;
     }
     
-    /// Used to tell where GLFW to dump any errors it has
-    
     glfwSetErrorCallback(error_callback);
-    
-    /// Creating the window object
-    
-    /// Window "hints" are used to tell GLFW important things before creation of a window in this case the version and OpenGL Profile
     
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     
-    GLFWwindow* window = glfwCreateWindow(640, 480, "Proton Engine v0.0.1", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(640, 480, "Proton Engine v0.0.3 DEV", NULL, NULL);
     if (!window)
     {
         std::cout << "GLFW failed to create a window\n";
     }
     
-    
-    
-    /// Telling the OpenGL API what the window context is
     glfwMakeContextCurrent(window);
-    
-    /// Telling glad to Load OpenGL
     gladLoadGL();
     glfwSwapInterval(1);
-    
-    /// Telling GLFW what to call back to when interperting inputs
     glfwSetKeyCallback(window, key_callback);
-    
-    /// Paramters for OpenGL To display into the window with
     
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
     glViewport(0, 0, width, height);
     
-    
-    /// VBO: Video Buffer Object, The VBO is GPU Memory used for storing your vertex data, instead of sending vertex data from your cpu to your gpu every frame you upload it once through the VBO and the GPU can then access the data every time you draw
-    /// VAO: Vertex Attribute Object. used for refrencing your Vertex Atributes, telling your GPU how to read your data in the VBO, telling it what index your data is at
-    /// IBO: Index Buffer Object, used to tell OpenGL to go over a vertex again to save space by not having to repeat verticies
-    
-    /// Shaders: Pipeline
-    ///
-    /// Draw Call
-    /// ->
-    /// Vertex Shader:
-    /// Called for each vertex, telling where the vertex to be on the screen (also used to pass data to the next shader)
-    /// ->
-    /// Fragment/Pixel Shader:
-    /// Run for each Pixel that needs to be drawn, Resterizing Each Pixel, Decides which color each pixel needs to be
-    /// ->
-    /// Drawn on Screen
-    
     std::string filepath = getExecutablePath();
     filepath = filepath.erase(filepath.length() - 14, 14);
+    bool debug = false; // Debug set to false (only used if needed)
     
-    std::cout << "Executable Being Run at: " << filepath << std::endl;
-    
-    bool debug = false;
-    
-    if (debug == true) {
-        filepath = "/Users/vibingcatt/Documents/GitHub/ProtonEngine/Proton Engine/src";
-    }
+    // Loading Shaders
     
     // shader_program_source source = parse_shader(filepath + "resources\\shaders\\basic.glsl");
-    shader_program_source source = parse_shader(filepath + "/resources/shaders/basic.glsl"); // Mac Version
+    shader_program_source source = parse_shader(filepath + "/resources/shaders/basic.glsl"); // Main Shader
     unsigned int shader = create_shaders(source.vertex_source, source.fragment_source);
+    
+    shader_program_source skysource = parse_shader(filepath + "/resources/shaders/skybox.glsl"); // Skybox Shader
+    unsigned int shaderSkybox = create_shaders(skysource.vertex_source, skysource.fragment_source);
+    
+    std::vector<std::string> skyboxtex = {filepath + "/resources/skyboxes/nx.png", // right
+        filepath + "/resources/skyboxes/px.png", // left
+        filepath + "/resources/skyboxes/ny.png", // top
+        filepath + "/resources/skyboxes/py.png", // bottom
+        filepath + "/resources/skyboxes/nz.png", // front
+        filepath + "/resources/skyboxes/pz.png"}; // back
+    
+    new Skybox(skyboxtex);
     
     glUseProgram(shader);
     
@@ -486,6 +459,8 @@ int main()
     
     bool parseMap = false;
     bool deleteAll = false;
+    
+    
     
     
     while (!glfwWindowShouldClose(window))
@@ -635,7 +610,7 @@ int main()
                 player.position = player.last_position;
                 touching = true;
                 
-            }}
+        }}
             player.hitbox.position = glm::vec3(player.position.x - (0.5 * player.hitbox.dimensions.x), player.position.y - (0.5 * player.hitbox.dimensions.y), player.position.z - (0.5 * player.hitbox.dimensions.z));
             
             
@@ -651,8 +626,15 @@ int main()
             float aspect = (fbh > 0) ? (float)fbw / (float)fbh : 4.0f/3.0f;
             glm::mat4 projection = glm::perspective(glm::radians(45.0f), aspect, 0.1f, 100.0f);
             
-            // render
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        
+            // Skybox Render Code
+            glDepthMask(GL_FALSE);
+            glUseProgram(shaderSkybox);
+        
+            Renderer::RenderSkybox(shaderSkybox);
+            glDepthMask(GL_TRUE);
+            // render
             glUseProgram(shader);
             Renderer::RenderAll(shader);
         

@@ -13,6 +13,7 @@ class Cube;
 class Slope;
 class Mesh;
 class LightSource;
+class Skybox;
 
 class Renderer {
 public:
@@ -20,7 +21,9 @@ public:
     static void RegisterCube(Cube* cube);
     static void RegisterMesh(Mesh* mesh);
     static void RegisterLight(LightSource* light);
+    static void setSkyBox(Skybox* skybox);
     static void RenderAll(unsigned int shaderProgram);
+    static void RenderSkybox(unsigned int shader);
     
     static std::vector<Cube*> returnCubes();
     static std::vector<Slope*> returnSlopes();
@@ -29,6 +32,8 @@ public:
     static void deleteSlope(int index);
     static void deleteLight(int index);
     static void ClearAll();
+    
+    static Skybox* skybox;
 
 private:
     static std::vector<Cube*> cubes;
