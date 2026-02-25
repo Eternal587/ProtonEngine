@@ -38,35 +38,123 @@
 
 #if defined(_WIN32)
     #include <windows.h>
-#elif __linux__
+    const std::string ARCH = "WIN32";
+#elif defined(__linux__)
     // Code for Linux
-#elif __APPLE__
+    const std::string ARCH = "LINUX";
+#elif defined(__APPLE__)
     #include <mach-o/dyld.h>
+    const std::string ARCH = "APPLE";
+#else
+#error "Architechure Platform Unknown, Proton Engine only supports Windows, MacOS, and Linux"
 #endif
+
+const char* PROJECT_NAME = "Proton Engine v0.0.3";
+const uint32_t WIDTH = 800; // Defining the starting Width for the GLFW Window
+const uint32_t HEIGHT = 600; // Defining the starting Height for the GLFW Window
+
+class Application {
+public:
+    void run() {
+        initWindow();
+        initVulkan();
+        mainLoop();
+        cleanup();
+    }
+
+private:
+    VkInstance instance; // Creates the Vulkan Instance
+    GLFWwindow* window; // Creates the GLFW Window Object
+    void initWindow() {
+        glfwInit();
+        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API); // Disabling GLFW from automatically attempting to use OpenGL
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); // Telling GLFW to disable window resizing
+        
+        window = glfwCreateWindow(WIDTH, HEIGHT, PROJECT_NAME,  nullptr, nullptr); // Defining the Window Object for Vulkan to use
+    }
+    void createInstance() {
+        // Defining Local App Info (Optional)
+        VkApplicationInfo appInfo{}; // Creating Application Info
+        appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO; // Defining the strucuture as application info (Required)
+        appInfo.pApplicationName = PROJECT_NAME; // Defining the name of the App
+        appInfo.pEngineName = "Proton Engine"; // Defining the name of the Engine
+        appInfo.engineVersion = VK_MAKE_VERSION(0, 0, 3); // Defining the Version of the Engine
+        appInfo.apiVersion = VK_API_VERSION_1_0; // Defining the API Version of the App
+        
+        // Defining Global Info (Required)
+        VkInstanceCreateInfo createInfo{}; // Creating Instance Info
+        createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO; // Define Instance Info
+        createInfo.pApplicationInfo = &appInfo; // Giving Vulkan the app info we created
+        
+        // Loading and dealing with GLFW extensions
+        std::vector<const char*> requiredExtensions; // Any Required Extensions EX: MacOS Compatiability
+        uint32_t glfwExtensionCount = 0; // Amount of Extensions
+        const char** glfwExtensions; // Extension Names
+        
+        glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount); // Getting all Extensions required to run the program
+        
+        createInfo.enabledExtensionCount = glfwExtensionCount; // Setting the amount of enabled extensions
+        createInfo.ppEnabledExtensionNames = glfwExtensions; // Giving all of the enable extension names to Vulkan
+        
+        createInfo.enabledLayerCount = 0; // Setting Layer Count
+    
+        
+        // MacOS Required Vulkan Extension
+        if (ARCH == "APPLE") {
+            for(uint32_t i = 0; i < glfwExtensionCount; i++) {
+                requiredExtensions.emplace_back(glfwExtensions[i]);
+            }
+            
+            requiredExtensions.emplace_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+            requiredExtensions.emplace_back("VK_KHR_get_physical_device_properties2");
+            
+            createInfo.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
+            
+            createInfo.enabledExtensionCount = (uint32_t) requiredExtensions.size();
+            createInfo.ppEnabledExtensionNames = requiredExtensions.data();
+        }
+        
+        
+        // Creating the Vulkan Instance
+        // Error Handling
+        if (vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS) {
+            throw std::runtime_error("Failed to create instance!");
+        }
+        
+        /// Vulkan Instance Creation
+        ///     Pointer to the Instance info
+        ///     Pointer to Custom memory allocater (nullptr if none)
+        ///     Poniter to the variable containing the instance
+    }
+    
+    void initVulkan() {
+        createInstance();
+    }
+
+    void mainLoop() {
+        while (!glfwWindowShouldClose(window)) {
+            glfwPollEvents(); // Gather any window events such as resizing, moving, ect
+        }
+    }
+
+    void cleanup() {
+        glfwDestroyWindow(window);
+        
+        glfwTerminate();
+    }
+};
 
 
 int main() {
-    glfwInit();
+    Application app;
 
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    GLFWwindow* window = glfwCreateWindow(800, 600, "Vulkan window", nullptr, nullptr);
-
-    uint32_t extensionCount = 0;
-    vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
-
-    std::cout << extensionCount << " extensions supported\n";
-
-    glm::mat4 matrix;
-    glm::vec4 vec;
-    auto test = matrix * vec;
-
-    while(!glfwWindowShouldClose(window)) {
-        glfwPollEvents();
+    try {
+        app.run();
+    } catch (const std::exception& e) {
+        std::cerr << e.what() << std::endl;
+        return EXIT_FAILURE;
     }
 
-    glfwDestroyWindow(window);
-
-    glfwTerminate();
-
-    return 0;
+    return EXIT_SUCCESS;
 }
+
