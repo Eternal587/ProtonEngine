@@ -13,6 +13,7 @@
 #include "imgui/imgui_impl_opengl3.h"
 
 /// Glad and GLFW
+#define GLFW_INCLUDE_VULKAN
 #include "glad.h"
 #include <GLFW/glfw3.h>
 
@@ -22,6 +23,8 @@
 #include <sstream>
 
 /// GLM & Other Math
+#define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtc/matrix_transform.hpp>
@@ -34,68 +37,30 @@
 #include <OpenAL/OpenAL.h>
 
 /// Proton Engine Specific Headers
+#include "shaderManager.h"
 
-struct shader_program_source {
-    std::string vertex_source;
-    std::string fragment_source;
-};
+int main() {
+    glfwInit();
 
-const char* fallback_vertex = R"(
-#version 330 core
-layout (location = 0) in vec2 aPos;
-void main() {
-    gl_Position = vec4(aPos, 1.0, 1.0);
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+    GLFWwindow* window = glfwCreateWindow(800, 600, "Vulkan window", nullptr, nullptr);
+
+    uint32_t extensionCount = 0;
+    vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
+
+    std::cout << extensionCount << " extensions supported\n";
+
+    glm::mat4 matrix;
+    glm::vec4 vec;
+    auto test = matrix * vec;
+
+    while(!glfwWindowShouldClose(window)) {
+        glfwPollEvents();
+    }
+
+    glfwDestroyWindow(window);
+
+    glfwTerminate();
+
+    return 0;
 }
-)";
-
-const char* fallback_fragment = R"(
-#version 330 core
-out vec4 FragColor;
-void main() {
-    FragColor = vec4(0.2, 0.7, 0.3, 1.0);
-}
-)";
-
-int main()
-{
-    if(!glfwInit()) {
-        std::cout << "GLFW Failed to Initalize" << std::endl;
-    }
-    
-    glfwSetErrorCallback(error_callback);
-    
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    
-    GLFWwindow* window = glfwCreateWindow(640, 480, "Proton Engine v0.0.3 DEV", NULL, NULL);
-    if (!window)
-    {
-        std::cout << "GLFW failed to create a window\n";
-    }
-    
-    glfwMakeContextCurrent(window);
-    glfwSwapInterval(1);
-    
-    int width, height;
-    glfwGetFramebufferSize(window, &width, &height);
-    
-    GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
-    const GLFWvidmode* mode = glfwGetVideoMode(primaryMonitor);
-    
-    glfwSetWindowMonitor(window, primaryMonitor, 0, 0, mode->width, mode->height, mode->refreshRate);
-    
-    while (!glfwWindowShouldClose(window))
-    {
-        int width, height;
-        glfwGetFramebufferSize(window, &width, &height);
-        
-        glfwSwapBuffers(window);
-    }
-        
-        /// Destroying the GLFW Window
-        glfwDestroyWindow(window);
-        
-        /// Terminating GLFW
-        glfwTerminate();
-    }
