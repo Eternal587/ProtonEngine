@@ -18,6 +18,8 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <vector>
+#include <cstring>
 
 /// GLM & Other Math
 #define GLM_FORCE_RADIANS
@@ -53,6 +55,43 @@ const char* PROJECT_NAME = "Proton Engine v0.0.3";
 const uint32_t WIDTH = 800; // Defining the starting Width for the GLFW Window
 const uint32_t HEIGHT = 600; // Defining the starting Height for the GLFW Window
 
+// Error Handling / Validation Layers
+const std::vector<const char*> validationLayers = {
+    "VK_LAYER_KHRONOS_validation"
+};
+
+#ifdef NDEBUG
+    const bool enableValidationLayers = false;
+#else
+    const bool enableValidationLayers = true;
+#endif
+
+// Check for validation layer support
+bool checkValidationLayerSupport() {
+    uint32_t layerCount;
+    vkEnumerateInstanceLayerProperties(&layerCount, nullptr); // Getting Layer Count
+    
+    std::vector<VkLayerProperties> availableLayers(layerCount);
+    vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data()); // Getting Layers Supported
+    
+    for (const char* layerName : validationLayers) {
+        bool layerFound = false;
+        
+        for (const auto& layerProperties : availableLayers) {
+            if (strcmp(layerName, layerProperties.layerName) == 0) {
+                layerFound = true;\
+                break;
+            }
+        }
+        
+        if (!layerFound) {
+            return false;
+        }
+    }
+    return true;
+}
+
+// Application Class
 class Application {
 public:
     void run() {
@@ -73,6 +112,11 @@ private:
         window = glfwCreateWindow(WIDTH, HEIGHT, PROJECT_NAME,  nullptr, nullptr); // Defining the Window Object for Vulkan to use
     }
     void createInstance() {
+        // Checking if Validation Layers are supported
+        if (enableValidationLayers && !checkValidationLayerSupport()) {
+            throw std::runtime_error("validation layers are requested but not available!");
+        }
+        
         // Defining Local App Info (Optional)
         VkApplicationInfo appInfo{}; // Creating Application Info
         appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO; // Defining the strucuture as application info (Required)
@@ -97,7 +141,21 @@ private:
         createInfo.ppEnabledExtensionNames = glfwExtensions; // Giving all of the enable extension names to Vulkan
         
         createInfo.enabledLayerCount = 0; // Setting Layer Count
-    
+        
+        // Vulkan Extensions
+        uint32_t extensionCount = 0;
+        vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr); // Gets amount of Available Vulkan Extensions
+        
+        std::vector<VkExtensionProperties> extensions(extensionCount);
+        
+        vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, extensions.data()); // Exports them to a variable
+        
+        // List all availiable Vulkan Extensions
+        std::cout << "Available Extensions:\n";
+        
+        for (const auto& extension : extensions) {
+            std::cout << '\t' << extension.extensionName << '\n';
+        }
         
         // MacOS Required Vulkan Extension
         if (ARCH == "APPLE") {
@@ -138,9 +196,10 @@ private:
     }
 
     void cleanup() {
-        glfwDestroyWindow(window);
+        vkDestroyInstance(instance, nullptr); // Destroying Vulkan Instance
         
-        glfwTerminate();
+        glfwDestroyWindow(window); // Destroying GLFW Window
+        glfwTerminate(); // Terminating GLFW
     }
 };
 
