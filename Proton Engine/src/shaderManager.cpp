@@ -4,6 +4,7 @@
 //
 //  Created by VibingCatt on 2/25/26.
 //
+#include "shaderManager.h"
 
 const char* fallback_vertex = R"(
 #version 330 core

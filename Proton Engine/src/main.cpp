@@ -7,15 +7,12 @@
 
 #include <iostream>
 
-/// IMGUI
-#include "imgui/imgui.h"
-#include "imgui/imgui_impl_glfw.h"
-#include "imgui/imgui_impl_opengl3.h"
-
-/// Glad and GLFW
+/// GLFW & Vulkan
 #define GLFW_INCLUDE_VULKAN
-#include "glad.h"
 #include <GLFW/glfw3.h>
+#include <vulkan/vulkan.h>
+#include <stdexcept>
+#include <cstdlib>
 
 /// Strings and Text
 #include <fstream>
@@ -38,6 +35,15 @@
 
 /// Proton Engine Specific Headers
 #include "shaderManager.h"
+
+#if defined(_WIN32)
+    #include <windows.h>
+#elif __linux__
+    // Code for Linux
+#elif __APPLE__
+    #include <mach-o/dyld.h>
+#endif
+
 
 int main() {
     glfwInit();

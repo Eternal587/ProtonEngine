@@ -12,17 +12,26 @@
 		3925D22B2E9303E600786FE4 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3925D22A2E9303E600786FE4 /* Cocoa.framework */; };
 		3925D22D2E9303FA00786FE4 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3925D22C2E9303FA00786FE4 /* CoreVideo.framework */; };
 		3925D22F2E93040000786FE4 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3925D22E2E93040000786FE4 /* IOKit.framework */; };
+		39E91A882F4FA27D00A5850D /* libvulkan.1.4.341.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 39E91A872F4FA27D00A5850D /* libvulkan.1.4.341.dylib */; };
+		39E91A8E2F4FA35D00A5850D /* libvulkan.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 39E91A8D2F4FA35D00A5850D /* libvulkan.1.dylib */; };
+		39E91A902F4FA36100A5850D /* libvulkan.1.dylib in Copy Files */ = {isa = PBXBuildFile; fileRef = 39E91A8F2F4FA36100A5850D /* libvulkan.1.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		39E91A922F4FA36600A5850D /* libvulkan.1.4.341.dylib in Copy Files */ = {isa = PBXBuildFile; fileRef = 39E91A912F4FA36600A5850D /* libvulkan.1.4.341.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		39E91A932F4FA38000A5850D /* libglfw.3.4.dylib in Copy Files */ = {isa = PBXBuildFile; fileRef = 3925D21E2E9301FD00786FE4 /* libglfw.3.4.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		3925D1CE2E92A40F00786FE4 /* CopyFiles */ = {
+		3925D1CE2E92A40F00786FE4 /* Copy Files */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = /usr/share/man/man1/;
-			dstSubfolderSpec = 0;
+			buildActionMask = 12;
+			dstPath = "";
+			dstSubfolderSpec = 10;
 			files = (
+				39E91A932F4FA38000A5850D /* libglfw.3.4.dylib in Copy Files */,
+				39E91A902F4FA36100A5850D /* libvulkan.1.dylib in Copy Files */,
+				39E91A922F4FA36600A5850D /* libvulkan.1.4.341.dylib in Copy Files */,
 			);
-			runOnlyForDeploymentPostprocessing = 1;
+			name = "Copy Files";
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
@@ -34,11 +43,37 @@
 		3925D22A2E9303E600786FE4 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		3925D22C2E9303FA00786FE4 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		3925D22E2E93040000786FE4 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		39E91A872F4FA27D00A5850D /* libvulkan.1.4.341.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libvulkan.1.4.341.dylib; path = ../../../VulkanSDK/macOS/lib/libvulkan.1.4.341.dylib; sourceTree = "<group>"; };
+		39E91A892F4FA2BF00A5850D /* libvulkan.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libvulkan.1.dylib; path = ../../../../../Volumes/M2_SSD/SteamLibrary/steamapps/common/tModLoader/Libraries/Native/OSX/libvulkan.1.dylib; sourceTree = "<group>"; };
+		39E91A8B2F4FA33000A5850D /* libvulkan.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libvulkan.1.dylib; path = ../../../../../Volumes/M2_SSD/SteamLibrary/steamapps/common/tModLoader/Libraries/Native/OSX/libvulkan.1.dylib; sourceTree = "<group>"; };
+		39E91A8D2F4FA35D00A5850D /* libvulkan.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libvulkan.1.dylib; path = ../../../VulkanSDK/macOS/lib/libvulkan.1.dylib; sourceTree = "<group>"; };
+		39E91A8F2F4FA36100A5850D /* libvulkan.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libvulkan.1.dylib; path = ../../../VulkanSDK/macOS/lib/libvulkan.1.dylib; sourceTree = "<group>"; };
+		39E91A912F4FA36600A5850D /* libvulkan.1.4.341.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libvulkan.1.4.341.dylib; path = ../../../VulkanSDK/macOS/lib/libvulkan.1.4.341.dylib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		39E91A942F4FA48500A5850D /* Exceptions for "Proton Engine" folder in "Proton Engine" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				src/imgui/imgui_demo.cpp,
+				src/imgui/imgui_draw.cpp,
+				src/imgui/imgui_impl_glfw.cpp,
+				src/imgui/imgui_impl_vulkan.cpp,
+				src/imgui/imgui_tables.cpp,
+				src/imgui/imgui_widgets.cpp,
+				src/imgui/imgui.cpp,
+				src/WindowsLibs/glm/detail/glm.cpp,
+			);
+			target = 3925D1CF2E92A40F00786FE4 /* Proton Engine */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		3925D1D22E92A40F00786FE4 /* Proton Engine */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				39E91A942F4FA48500A5850D /* Exceptions for "Proton Engine" folder in "Proton Engine" target */,
+			);
 			path = "Proton Engine";
 			sourceTree = "<group>";
 		};
@@ -52,8 +87,10 @@
 				3925D22F2E93040000786FE4 /* IOKit.framework in Frameworks */,
 				3925D22D2E9303FA00786FE4 /* CoreVideo.framework in Frameworks */,
 				3925D22B2E9303E600786FE4 /* Cocoa.framework in Frameworks */,
-				3925D21F2E9301FD00786FE4 /* libglfw.3.4.dylib in Frameworks */,
 				3925D1DC2E92A47500786FE4 /* OpenGL.framework in Frameworks */,
+				3925D21F2E9301FD00786FE4 /* libglfw.3.4.dylib in Frameworks */,
+				39E91A8E2F4FA35D00A5850D /* libvulkan.1.dylib in Frameworks */,
+				39E91A882F4FA27D00A5850D /* libvulkan.1.4.341.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -63,6 +100,9 @@
 		3925D1C72E92A40F00786FE4 = {
 			isa = PBXGroup;
 			children = (
+				39E91A912F4FA36600A5850D /* libvulkan.1.4.341.dylib */,
+				39E91A8B2F4FA33000A5850D /* libvulkan.1.dylib */,
+				39E91A8F2F4FA36100A5850D /* libvulkan.1.dylib */,
 				3925D1D22E92A40F00786FE4 /* Proton Engine */,
 				3925D1DA2E92A47500786FE4 /* Frameworks */,
 				3925D1D12E92A40F00786FE4 /* Products */,
@@ -80,6 +120,9 @@
 		3925D1DA2E92A47500786FE4 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				39E91A892F4FA2BF00A5850D /* libvulkan.1.dylib */,
+				39E91A8D2F4FA35D00A5850D /* libvulkan.1.dylib */,
+				39E91A872F4FA27D00A5850D /* libvulkan.1.4.341.dylib */,
 				3925D22E2E93040000786FE4 /* IOKit.framework */,
 				3925D22C2E9303FA00786FE4 /* CoreVideo.framework */,
 				3925D22A2E9303E600786FE4 /* Cocoa.framework */,
@@ -99,7 +142,7 @@
 			buildPhases = (
 				3925D1CC2E92A40F00786FE4 /* Sources */,
 				3925D1CD2E92A40F00786FE4 /* Frameworks */,
-				3925D1CE2E92A40F00786FE4 /* CopyFiles */,
+				3925D1CE2E92A40F00786FE4 /* Copy Files */,
 			);
 			buildRules = (
 			);
@@ -291,6 +334,8 @@
 					"/opt/homebrew/Cellar/glm/1.0.1/include/**",
 					"$(PROJECT_DIR)/src/",
 					"/opt/homebrew/Cellar/assimp/6.0.2/include/**",
+					/usr/local/include,
+					/Users/vibingcatt/vulkansdk/macOS/include,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -356,6 +401,8 @@
 					"$(PROJECT_DIR)/Proton\\ Engine/src/WindowsLibs/lib-vc2022",
 					"$(PROJECT_DIR)/Proton\\ Engine/src/WindowsLibs",
 					"$(PROJECT_DIR)/Proton\\ Engine/src/WindowsLibs",
+					/Users/vibingcatt/vulkansdk/macOS/lib,
+					/usr/local/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -379,6 +426,8 @@
 					"/opt/homebrew/Cellar/glm/1.0.1/include/**",
 					"$(PROJECT_DIR)/src/",
 					"/opt/homebrew/Cellar/assimp/6.0.2/include/**",
+					/usr/local/include,
+					/Users/vibingcatt/vulkansdk/macOS/include,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -444,6 +493,8 @@
 					"$(PROJECT_DIR)/Proton\\ Engine/src/WindowsLibs/lib-vc2022",
 					"$(PROJECT_DIR)/Proton\\ Engine/src/WindowsLibs",
 					"$(PROJECT_DIR)/Proton\\ Engine/src/WindowsLibs",
+					/Users/vibingcatt/vulkansdk/macOS/lib,
+					/usr/local/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 6.0;
