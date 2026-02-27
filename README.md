@@ -3,7 +3,7 @@
 Proton Engine is a personal project to make a 3d engine from scratch using C++ and OpenGL, and make a crossplatform 3d Engine
 
 NOTE:
-for now releases will be for MacOS, I will work on exporting to Windows **soon** But until I have a **serious/semicompleted** release I will not be spending the time to get a windows vm setup for exporting to windows
+I am Currently in the Proccess of reworking the engine from scratch check [Here](https://github.com/Eternal587/ProtonEngine/tree/vulkan-recode) to see my progress. Because im being given this oppurtunity to recode I want to make It the right way. Classes, Structs, Cleaner Code, and Easier one command Compilation for Windows, Linux and MacOS
 
 I plan on making a game using the Engine called [Shattered Reality](https://trello.com/b/k7bogwtW/shattered-reality-planning) but for now that project is more of goal for this engine, I want the lighting, physics, everything to be build around my goals for shattered reality
 
@@ -14,16 +14,12 @@ I will be making custom class's and structs for Proton Engine using Header files
 Prototype Image:
 ![Prototype](https://eternal587.github.io/ProtonEngine/images/Prototype.png)
 
-STAGES
+New Progress Timeline
 ```
-1: Setup OpenGL
-2. Setup Shaders
-3. Clean Code, make structs and classes for objects to clean up my code
-4. Start Releasing for Windows and Linux
-5. Optimize 3d Rendering
-6. Add Map Loader and Editor
-7. Add Graphical Settings Options (Low, Medium, Quality, Ultra) 
-8. Allow for Custom Shaders to be used
+1: Setup Vulkan Rendering 
+2: Rework Shaders
+3: Rework Workshop System
+4: Optimize OPTIMIZE OPTIMIZE!!!
 ```
 
 NOTE:
