@@ -5,7 +5,7 @@ Proton Engine is a personal project to make a 3d engine from scratch using C++ a
 NOTE:
 for now releases will be for MacOS, I will work on exporting to Windows **soon** But until I have a **serious/semicompleted** release I will not be spending the time to get a windows vm setup for exporting to windows
 
-I plan on making a game using the Engine called (https://trello.com/b/k7bogwtW/shattered-reality-planning)[Shattered Reality] but for now that project is more of goal for this engine, I want the lighting, physics, everything to be build around my goals for shattered reality
+I plan on making a game using the Engine called [Shattered Reality](https://trello.com/b/k7bogwtW/shattered-reality-planning) but for now that project is more of goal for this engine, I want the lighting, physics, everything to be build around my goals for shattered reality
 
 As well I would like to impliment custom shaders for people using Proton Engine for their games I want Proton Engine to be easy to setup and use for people not fammilar with it's internals
 
