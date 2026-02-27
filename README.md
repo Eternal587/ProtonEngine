@@ -40,11 +40,7 @@ Optimized Graphics
 Releases for Windows, Linux, and MacOS
 ```
 
-CURRENT TO-DO LIST (2/19/26)
+CURRENT TO-DO LIST (2/27/26)
 ```
-Create Shaders for Rendering Hitboxes, Reticals, and Skyboxes
-Work on Object Based system and Custom Scripting 
-Fix Hitbox Issues
-Debugging from Inside the Game (VIA SHowing Hitboxes, being able to move objects, save maps, build maps, ect)
-Work On Custom ImGui Themes for Astetics
+Continue Vulkan Rework
 ```
